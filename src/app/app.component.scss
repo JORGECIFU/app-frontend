@@ -1,0 +1,58 @@
+
+
+
+// Estilos para Contenido
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+/* A. Estilos para navbar */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #1a2b3c;
+  color: white;
+
+  .nav-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+
+    &:hover {
+      background-color: #00c6ff;
+    }
+  }
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 5rem;
+}
+
+/* C. Estilos para footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  justify-content: center;
+  background-color: #1a2b3c;
+  text-align: center;
+  text-wrap: wrap;
+}

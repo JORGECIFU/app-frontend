@@ -12,22 +12,27 @@ import { environment } from '../../enviroments/enviroment';
 })
 export class AuthService extends ZustandBaseService<AuthState> {
   /**
-   * initStore define el estado inicial y las acciones.
+   * Definimos el estado inicial y las acciones.
    */
   initStore(): StateCreator<AuthState> {
     return persist<AuthState>(
       (set) => ({
         token: null,
-        setToken: (token: string) => set(() => ({ token })),
-        clearToken: () => set(() => ({ token: null })),
+        refreshToken: null,
+        setTokens: (token: string, refreshToken: string) =>
+          set(() => ({ token: token, refreshToken })),
+        clearTokens: () => set(() => ({ token: null, refreshToken: null })),
       }),
       {
-        name: 'authStore',
+        name: 'authStore', // clave en sessionStorage
         storage: createJSONStorage(() => sessionStorage),
       },
     ) as unknown as StateCreator<AuthState>;
   }
 
+  /**
+   * Forzamos usar el store persistido.
+   */
   override createStore() {
     return createStore(this.initStore());
   }
@@ -37,18 +42,47 @@ export class AuthService extends ZustandBaseService<AuthState> {
   }
 
   /**
-   * Llama al endpoint /api/auth/login para obtener el token.
-   * Usamos environment.HOST_BACKEND para la URL base.
+   * Llama a /api/auth/login, retorna { token, refreshToken }.
+   * Luego quien se suscriba (p. ej. AuthComponent) usará setTokens().
    */
   login(username: string, password: string) {
-    const url = `${environment.HOST_BACKEND}/api/auth/login`; // ②
-    return this.http.post<{ token: string }>(url, { username, password });
+    const url = `${environment.HOST_BACKEND}/api/auth/login`;
+    return this.http.post<{ token: string; refreshToken: string }>(url, {
+      username,
+      password,
+    });
   }
 
   /**
-   * Retorna el token actual almacenado (sin suscribirse).
+   * Llama a /api/auth/refresh con el refreshToken actual en el store.
+   * Devuelve el nuevo { token, refreshToken }.
    */
-  getTokenFromStorage(): string | null {
+  refreshToken() {
+    const rt = this.getState().refreshToken;
+    return this.http.post<{ token: string; refreshToken: string }>(
+      `${environment.HOST_BACKEND}/api/auth/refresh`,
+      { refreshToken: rt },
+    );
+  }
+
+  /**
+   * Obtiene el token actual sin suscribirse.
+   */
+  getToken(): string | null {
     return this.getState().token;
+  }
+
+  /**
+   * Obtiene el refreshToken actual sin suscribirse.
+   */
+  getRefreshToken(): string | null {
+    return this.getState().refreshToken;
+  }
+
+  /**
+   * Limpia ambos tokens del store (usado en logout o al expirar).
+   */
+  clearTokens() {
+    this.getState().clearTokens();
   }
 }

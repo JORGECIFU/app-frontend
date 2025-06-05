@@ -1,0 +1,87 @@
+<!-- src/app/home/home.component.html -->
+
+<!-- 1. Sección Hero (igual que antes) -->
+<section class="home-content">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-content-item">
+        <img
+          src="Bitmain Antminer L7.webp"
+          alt="Imagen de Minería Cripto 5.0"
+          width="80%"
+          class="hero-content-item-image"
+        />
+      </div>
+      <div class="hero-content-item centered-content">
+        <h1 class="hero-content-item-title shadowed-text">
+          Bienvenido a Minería Cripto 5.0
+        </h1>
+        <h2 class="hero-subtitle shadowed-text">
+          Tu plataforma de minería en la nube para criptomonedas
+        </h2>
+        <button mat-raised-button class="plan-button" routerLink="/signup">
+          Comienza Ahora
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Sección de Planes con sintaxis clásica (*ngIf, *ngFor) -->
+<section class="home-content centered-content">
+  <mat-card class="main-card">
+    <mat-card-header>
+      <mat-card-title class="subtitle">
+        Planes de Minería en Alquiler
+      </mat-card-title>
+      <mat-card-subtitle>
+        Elige el plan que mejor se adapte a tus necesidades
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <!-- a) Suscribirse al Observable con async pipe -->
+      <ng-container *ngIf="planes$ | async as planes; else cargando">
+        <!-- b) Validar existencia de elementos -->
+        <div *ngIf="planes.length > 0; else sinPlanes">
+          <div class="plans-container">
+            <!-- c) Iterar con ngFor y usar trackById -->
+            <mat-card
+              *ngFor="let plan of planes; trackBy: trackById"
+              class="plan-card"
+            >
+              <mat-card-header>
+                <mat-card-title class="card-title">
+                  Plan {{ plan.nombre }}
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <p>
+                  Ganancia mínima:
+                  <b>${{ plan.gananciaMin.toFixed(2) }} USD/d</b>
+                </p>
+                <p>
+                  Ganancia máxima:
+                  <b>${{ plan.gananciaMax.toFixed(2) }} USD/d</b>
+                </p>
+                <p>
+                  Duración:
+                  {{ plan.duracionDias | number: "1.0-0" }} días
+                </p>
+              </mat-card-content>
+              <mat-card-actions>
+                <button mat-raised-button class="plan-button">Contratar</button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+        <ng-template #sinPlanes>
+          <p>No hay planes disponibles en este momento.</p>
+        </ng-template>
+      </ng-container>
+      <ng-template #cargando>
+        <p>Cargando planes...</p>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</section>

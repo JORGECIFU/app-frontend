@@ -1,9 +1,6 @@
+// src/app/auth/auth.component.ts
 import { CommonModule } from '@angular/common';
-import {
-  HttpClient,
-  HttpClientModule,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
@@ -12,37 +9,38 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
+  standalone: true,
   imports: [
-    CommonModule, // Habilita @if y pipe async
-    FormsModule, // Habilita ngModel
-    MatCardModule, // Tarjeta de Material
-    MatFormFieldModule, // Form fields
-    MatInputModule, // Inputs estilizados
-    MatButtonModule, // Botones de Material
-    MatIconModule, // Íconos (opcional)
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',
 })
 export class AuthComponent {
-  private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   username: string = '';
   password: string = '';
   errorMessage: string | null = null;
 
-  /**
-   * Llama a AuthService.login en lugar de HttpClient directamente.
-   */
   login() {
     this.authService.login(this.username, this.password).subscribe({
       next: (res) => {
-        this.authService.getState().setToken(res.token);
-        // Redirige si es necesario
+        // ① Guardar ambos tokens en el store
+        this.authService.getState().setTokens(res.token, res.refreshToken);
+        // ② Redirigir (por ejemplo a /system)
+        this.router.navigate(['/system']);
       },
       error: (err) => {
         console.error('Error al autenticar:', err);
