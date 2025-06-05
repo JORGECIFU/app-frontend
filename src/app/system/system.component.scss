@@ -1,0 +1,58 @@
+.system-container {
+  height: calc(100vh - 64px); // Ajusta según el alto de tu navbar
+
+  mat-sidenav-container {
+    height: 100%;
+
+    mat-sidenav {
+      width: 60px;
+      background-color: #1a2b3c;
+      transition: width 0.3s ease;
+
+      &.expanded {
+        width: 200px;
+      }
+
+      mat-nav-list {
+        padding: 0;
+
+        .toggle-button-container {
+          padding: 8px;
+          display: flex;
+          justify-content: flex-end;
+
+          button {
+            color: white;
+          }
+        }
+
+        a {
+          color: white;
+          height: 48px;
+
+          mat-icon {
+            color: #00c6ff;
+            margin-right: 16px;
+          }
+
+          &.active {
+            background-color: rgba(0, 198, 255, 0.1);
+            border-left: 4px solid gold;
+          }
+        }
+      }
+    }
+
+    mat-sidenav-content {
+      .content-container {
+        padding: 20px;
+        margin-left: 0px;
+        transition: margin-left 0.3s ease;
+
+        &.expanded {
+          margin-left: 25px;
+        }
+      }
+    }
+  }
+}

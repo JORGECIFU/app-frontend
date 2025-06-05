@@ -1,0 +1,267 @@
+<div class="stepper-container">
+  <div class="header-imagen">
+    <svg viewBox="0 0 24 24" class="payment-icon">
+      <path
+        fill="currentColor"
+        d="M20,8H4V6H20M20,18H4V12H20M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"
+      />
+    </svg>
+    <h1>Pasarela de Pagos Segura</h1>
+  </div>
+
+  <mat-stepper orientation="vertical" #stepper>
+    <!-- Paso 1: Datos Personales -->
+    <mat-step [stepControl]="datosPersonalesFormGroup">
+      <form [formGroup]="datosPersonalesFormGroup">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>person</mat-icon>
+            <span>Datos Personales</span>
+          </div>
+        </ng-template>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Nombre Completo</mat-label>
+          <input
+            matInput
+            formControlName="nombreCtrl"
+            placeholder="Juan Pérez"
+            required
+          />
+          <mat-icon matSuffix>account_circle</mat-icon>
+          <mat-error
+            *ngIf="
+              datosPersonalesFormGroup.get('nombreCtrl')?.hasError('required')
+            "
+          >
+            El nombre es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Correo Electrónico</mat-label>
+          <input
+            matInput
+            formControlName="emailCtrl"
+            placeholder="ejemplo@email.com"
+            required
+          />
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error
+            *ngIf="
+              datosPersonalesFormGroup.get('emailCtrl')?.hasError('required')
+            "
+          >
+            El correo es requerido
+          </mat-error>
+          <mat-error
+            *ngIf="datosPersonalesFormGroup.get('emailCtrl')?.hasError('email')"
+          >
+            Por favor ingrese un correo válido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Documento de Identidad</mat-label>
+          <input
+            matInput
+            formControlName="documentoCtrl"
+            placeholder="12345678"
+            required
+          />
+          <mat-icon matSuffix>badge</mat-icon>
+          <mat-error
+            *ngIf="
+              datosPersonalesFormGroup
+                .get('documentoCtrl')
+                ?.hasError('required')
+            "
+          >
+            El documento es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <div class="button-container">
+          <button
+            mat-button
+            matStepperNext
+            [disabled]="!datosPersonalesFormGroup.valid"
+          >
+            <mat-icon>arrow_forward</mat-icon>
+            Siguiente
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Paso 2: Datos de la Tarjeta -->
+    <mat-step [stepControl]="datosTarjetaFormGroup">
+      <form [formGroup]="datosTarjetaFormGroup">
+        <ng-template matStepLabel>
+          <div class="step-label">
+            <mat-icon>credit_card</mat-icon>
+            <span>Datos de Pago</span>
+          </div>
+        </ng-template>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Monto a Transferir (USD)</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="montoCtrl"
+            placeholder="0.00"
+            required
+            min="0.01"
+            step="0.01"
+            (input)="formatearMonto($event)"
+          />
+          <mat-icon matSuffix>attach_money</mat-icon>
+          <mat-error
+            *ngIf="datosTarjetaFormGroup.get('montoCtrl')?.hasError('required')"
+          >
+            El monto es requerido
+          </mat-error>
+          <mat-error
+            *ngIf="datosTarjetaFormGroup.get('montoCtrl')?.hasError('min')"
+          >
+            El monto debe ser mayor a 0
+          </mat-error>
+          <mat-error
+            *ngIf="datosTarjetaFormGroup.get('montoCtrl')?.hasError('pattern')"
+          >
+            El monto debe tener máximo 2 decimales
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Número de Tarjeta</mat-label>
+          <input
+            matInput
+            formControlName="numeroTarjetaCtrl"
+            placeholder="1234567890123456"
+            required
+            maxlength="16"
+          />
+          <mat-icon matSuffix>credit_card</mat-icon>
+          <mat-error
+            *ngIf="
+              datosTarjetaFormGroup
+                .get('numeroTarjetaCtrl')
+                ?.hasError('required')
+            "
+          >
+            El número de tarjeta es requerido
+          </mat-error>
+          <mat-error
+            *ngIf="
+              datosTarjetaFormGroup
+                .get('numeroTarjetaCtrl')
+                ?.hasError('pattern')
+            "
+          >
+            Debe contener 16 dígitos numéricos
+          </mat-error>
+        </mat-form-field>
+
+        <div class="card-security-group">
+          <mat-form-field appearance="fill">
+            <mat-label>Fecha de Expiración (MM/YY)</mat-label>
+            <input
+              matInput
+              formControlName="fechaExpiracionCtrl"
+              placeholder="12/25"
+              required
+            />
+            <mat-icon matSuffix>date_range</mat-icon>
+            <mat-error
+              *ngIf="
+                datosTarjetaFormGroup
+                  .get('fechaExpiracionCtrl')
+                  ?.hasError('required')
+              "
+            >
+              La fecha de expiración es requerida
+            </mat-error>
+            <mat-error
+              *ngIf="
+                datosTarjetaFormGroup
+                  .get('fechaExpiracionCtrl')
+                  ?.hasError('pattern')
+              "
+            >
+              Formato inválido. Use MM/YY
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>CVV</mat-label>
+            <input
+              matInput
+              formControlName="cvvCtrl"
+              placeholder="123"
+              required
+              maxlength="4"
+            />
+            <mat-icon matSuffix>security</mat-icon>
+            <mat-error
+              *ngIf="datosTarjetaFormGroup.get('cvvCtrl')?.hasError('required')"
+            >
+              El CVV es requerido
+            </mat-error>
+            <mat-error
+              *ngIf="datosTarjetaFormGroup.get('cvvCtrl')?.hasError('pattern')"
+            >
+              El CVV debe tener 3 o 4 dígitos
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="button-container">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Atrás
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!datosTarjetaFormGroup.valid"
+            (click)="procesarPago(stepper)"
+          >
+            <mat-icon>payments</mat-icon>
+            Procesar Pago
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Paso 3: Confirmación -->
+    <mat-step [editable]="false" [completed]="pagoCompletado">
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <mat-icon>check_circle</mat-icon>
+          <span>Confirmación</span>
+        </div>
+      </ng-template>
+      <div class="success-message" *ngIf="pagoCompletado">
+        <svg class="success-icon" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"
+          />
+        </svg>
+        <h2>¡Transacción Completada!</h2>
+        <p>Su pago ha sido procesado exitosamente.</p>
+        <p class="amount" *ngIf="datosTarjetaFormGroup.get('montoCtrl')?.value">
+          Monto: ${{ datosTarjetaFormGroup.get("montoCtrl")?.value }} USD
+        </p>
+      </div>
+      <div class="button-container">
+        <button mat-raised-button color="primary" routerLink="/home">
+          <mat-icon>home</mat-icon>
+          Volver al Inicio
+        </button>
+      </div>
+    </mat-step>
+  </mat-stepper>
+</div>

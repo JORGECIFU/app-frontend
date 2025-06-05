@@ -1,0 +1,104 @@
+<div class="plan-container">
+  <h1>Gestión de Planes</h1>
+
+  <!-- Formulario solo visible para administradores -->
+  @if (esAdmin) {
+    <form [formGroup]="planForm" (ngSubmit)="onSubmit()" class="plan-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre del Plan</mat-label>
+        <input matInput formControlName="nombre" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Ganancia Mínima Diaría (USD)</mat-label>
+        <input matInput type="number" formControlName="gananciaMin" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Ganancia Máxima Diaría (USD)</mat-label>
+        <input matInput type="number" formControlName="gananciaMax" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Duración (días)</mat-label>
+        <input matInput type="number" formControlName="duracionDias" required />
+      </mat-form-field>
+
+      <div class="button-container">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!planForm.valid"
+        >
+          {{ modoEdicion ? "Actualizar" : "Crear" }} Plan
+        </button>
+        @if (modoEdicion) {
+          <button mat-button type="button" (click)="resetForm()">
+            Cancelar
+          </button>
+        }
+      </div>
+    </form>
+  }
+
+  <!-- Lista de planes visible para todos -->
+  <table mat-table [dataSource]="planes" class="mat-elevation-z8">
+    <!-- Nombre Column -->
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef>Nombre</th>
+      <td mat-cell *matCellDef="let plan">{{ plan.nombre }}</td>
+    </ng-container>
+
+    <!-- Ganancia Mínima Column -->
+    <ng-container matColumnDef="gananciaMin">
+      <th mat-header-cell *matHeaderCellDef>Ganancia Mínima</th>
+      <td mat-cell *matCellDef="let plan">{{ plan.gananciaMin }} USD</td>
+    </ng-container>
+
+    <!-- Ganancia Máxima Column -->
+    <ng-container matColumnDef="gananciaMax">
+      <th mat-header-cell *matHeaderCellDef>Ganancia Máxima</th>
+      <td mat-cell *matCellDef="let plan">{{ plan.gananciaMax }} USD</td>
+    </ng-container>
+
+    <!-- Duración Column -->
+    <ng-container matColumnDef="duracionDias">
+      <th mat-header-cell *matHeaderCellDef>Duración</th>
+      <td mat-cell *matCellDef="let plan">{{ plan.duracionDias }} días</td>
+    </ng-container>
+
+    <!-- Acciones Column -->
+    @if (esAdmin) {
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let plan">
+          <button mat-icon-button color="primary" (click)="editarPlan(plan)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="eliminarPlan(plan.id!)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+    }
+
+    <tr
+      mat-header-row
+      *matHeaderRowDef="
+        esAdmin
+          ? ['nombre', 'gananciaMin', 'gananciaMax', 'duracionDias', 'acciones']
+          : ['nombre', 'gananciaMin', 'gananciaMax', 'duracionDias']
+      "
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="
+        let row;
+        columns: esAdmin
+          ? ['nombre', 'gananciaMin', 'gananciaMax', 'duracionDias', 'acciones']
+          : ['nombre', 'gananciaMin', 'gananciaMax', 'duracionDias']
+      "
+    ></tr>
+  </table>
+</div>

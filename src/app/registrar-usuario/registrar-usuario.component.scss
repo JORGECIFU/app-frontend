@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 160px); // Ajustamos para el header y footer
+  min-height: calc(100vh - 160px);
   background: linear-gradient(
     135deg,
     rgba(26, 43, 60, 0.95) 0%,
@@ -11,7 +11,7 @@
   padding: 2rem;
 }
 
-.login-card {
+.registro-card {
   max-width: 400px;
   width: 100%;
   padding: 2rem;
@@ -28,6 +28,14 @@
       font-size: 2rem;
       color: #1a2b3c;
       margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      mat-icon {
+        color: #00c6ff;
+      }
     }
   }
 }
@@ -65,12 +73,19 @@ form {
   }
 }
 
-.error-text {
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   text-align: center;
   margin: 1rem 0;
   padding: 0.5rem;
   border-radius: 4px;
   background-color: rgba(244, 67, 54, 0.1);
+
+  mat-icon {
+    color: #f44336;
+  }
 }
 
 .button-container {
@@ -92,12 +107,15 @@ form {
     &:disabled {
       background-color: rgba(gold, 0.5);
     }
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
   }
 }
 
-// Responsive adjustments
 @media (max-width: 480px) {
-  .login-card {
+  .registro-card {
     padding: 1.5rem;
   }
 

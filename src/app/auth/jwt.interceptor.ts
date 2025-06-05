@@ -30,12 +30,7 @@ export class JwtInterceptor implements HttpInterceptor {
     // 1. Obtener el token del store
     const token = this.authService.getState().token;
 
-    // 2. Saltar el token si es la petición a /api/planes
-    if (request.url.endsWith('/api/planes')) {
-      return next.handle(request);
-    }
-
-    // 3. Clonar petición con token si existe
+    // 2. Clonar petición con token si existe
     let authReq = request;
     if (token) {
       authReq = this.addTokenHeader(request, token);

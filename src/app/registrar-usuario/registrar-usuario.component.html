@@ -1,0 +1,103 @@
+<div class="registro-container">
+  <mat-card class="registro-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>person_add</mat-icon>
+        Registro de Usuario
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" required />
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="registroForm.get('nombre')?.hasError('required')">
+            El nombre es requerido
+          </mat-error>
+          <mat-error *ngIf="registroForm.get('nombre')?.hasError('minlength')">
+            El nombre debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="apellido" required />
+          <mat-icon matSuffix>person_outline</mat-icon>
+          <mat-error *ngIf="registroForm.get('apellido')?.hasError('required')">
+            El apellido es requerido
+          </mat-error>
+          <mat-error
+            *ngIf="registroForm.get('apellido')?.hasError('minlength')"
+          >
+            El apellido debe tener al menos 2 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" required />
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="registroForm.get('email')?.hasError('required')">
+            El correo electrónico es requerido
+          </mat-error>
+          <mat-error *ngIf="registroForm.get('email')?.hasError('email')">
+            Por favor ingrese un correo electrónico válido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            required
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+          >
+            <mat-icon>{{
+              hidePassword ? "visibility_off" : "visibility"
+            }}</mat-icon>
+          </button>
+          <mat-error *ngIf="registroForm.get('password')?.hasError('required')">
+            La contraseña es requerida
+          </mat-error>
+          <mat-error
+            *ngIf="registroForm.get('password')?.hasError('minlength')"
+          >
+            La contraseña debe tener al menos 8 caracteres
+          </mat-error>
+          <mat-error *ngIf="registroForm.get('password')?.hasError('pattern')">
+            La contraseña debe contener al menos una mayúscula, una minúscula y
+            un número
+          </mat-error>
+        </mat-form-field>
+
+        @if (errorMessage) {
+          <mat-error class="error-message">
+            <mat-icon>error_outline</mat-icon>
+            {{ errorMessage }}
+          </mat-error>
+        }
+
+        <div class="button-container">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="!registroForm.valid"
+          >
+            <mat-icon>how_to_reg</mat-icon>
+            Registrarse
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,6 +1,3 @@
-
-
-
 // Estilos para Contenido
 .page {
   position: relative;
@@ -42,7 +39,7 @@
 .content {
   display: flex;
   flex-direction: column;
-  padding: 0 0 5rem;
+  padding: 0 0 4rem;
 }
 
 /* C. Estilos para footer */
@@ -55,4 +52,10 @@
   background-color: #1a2b3c;
   text-align: center;
   text-wrap: wrap;
+}
+
+/* Ajuste para que el mat-menu se vea bien: */
+.mat-menu-panel {
+  /* Por defecto Angular Material ya da un estilo decente, pero podrías personalizar altura o anchura mínima */
+  min-width: 150px;
 }

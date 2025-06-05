@@ -33,6 +33,7 @@ export class AuthComponent {
   username: string = '';
   password: string = '';
   errorMessage: string | null = null;
+  hidePassword: boolean = true; // Controla la visibilidad de la contraseña
 
   login() {
     this.authService.login(this.username, this.password).subscribe({

@@ -1,11 +1,14 @@
 <!-- src/app/auth/login.component.html -->
 <mat-card class="login-card">
   <mat-card-header>
-    <mat-card-title>Iniciar Sesión</mat-card-title>
+    <mat-card-title>
+      <mat-icon>lock_open</mat-icon>
+      Iniciar Sesión
+    </mat-card-title>
   </mat-card-header>
+
   <mat-card-content>
     <form (ngSubmit)="login()">
-      <!-- Email -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Correo electrónico</mat-label>
         <input
@@ -14,31 +17,49 @@
           [(ngModel)]="username"
           name="username"
           required
+          placeholder="ejemplo@email.com"
         />
-        <mat-icon matSuffix>email</mat-icon>
+        <mat-icon matSuffix>person</mat-icon>
       </mat-form-field>
 
-      <!-- Password -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contraseña</mat-label>
         <input
           matInput
-          [type]="'password'"
+          [type]="hidePassword ? 'password' : 'text'"
           [(ngModel)]="password"
           name="password"
           required
+          placeholder="••••••••"
         />
-        <mat-icon matSuffix>lock</mat-icon>
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="'Mostrar contraseña'"
+          type="button"
+        >
+          <mat-icon>{{
+            hidePassword ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
       </mat-form-field>
 
-      <!-- Mensaje de error con @if -->
       @if (errorMessage) {
-        <mat-error class="error-text">{{ errorMessage }}</mat-error>
+        <mat-error class="error-text">
+          <mat-icon>error_outline</mat-icon>
+          {{ errorMessage }}
+        </mat-error>
       }
 
-      <!-- Botón de envío -->
       <div class="button-container">
-        <button mat-raised-button color="primary" type="submit">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!username || !password"
+        >
+          <mat-icon>login</mat-icon>
           Entrar
         </button>
       </div>

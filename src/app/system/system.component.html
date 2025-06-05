@@ -1,1 +1,32 @@
-<p>system works!</p>
+<div class="system-container">
+  <mat-sidenav-container>
+    <!-- Menú lateral -->
+    <mat-sidenav mode="side" [opened]="true" [class.expanded]="isExpanded">
+      <mat-nav-list>
+        <!-- Botón para contraer/expandir -->
+        <div class="toggle-button-container">
+          <button mat-icon-button (click)="toggleSidenav()">
+            <mat-icon>{{
+              isExpanded ? "chevron_left" : "chevron_right"
+            }}</mat-icon>
+          </button>
+        </div>
+
+        <!-- Enlaces del menú -->
+        <a mat-list-item routerLink="plan" routerLinkActive="active">
+          <mat-icon matListItemIcon>assignment</mat-icon>
+          <span matListItemTitle *ngIf="isExpanded">Planes</span>
+        </a>
+
+        <!-- Aquí puedes agregar más elementos del menú -->
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <!-- Contenido principal -->
+    <mat-sidenav-content>
+      <div class="content-container" [class.expanded]="isExpanded">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

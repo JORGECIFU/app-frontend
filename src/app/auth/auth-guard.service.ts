@@ -36,7 +36,7 @@ export class AuthGuardService implements CanActivate {
     } catch (err) {
       // Token mal formado: limpiar y redirigir
       this.authService.clearTokens();
-      return this.router.parseUrl('/login');
+      return this.router.parseUrl('/home');
     }
   }
 }

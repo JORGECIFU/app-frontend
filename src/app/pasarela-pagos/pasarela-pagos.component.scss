@@ -1,0 +1,126 @@
+.stepper-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.header-imagen {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #00c6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  .payment-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.card-security-group {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &[color="primary"] {
+      background-color: gold;
+      color: #1a2b3c;
+      &:hover {
+        background-color: #ffd700;
+      }
+      &:disabled {
+        background-color: rgba(gold, 0.5);
+      }
+    }
+  }
+}
+
+.step-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  mat-icon {
+    color: #00c6ff;
+  }
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    color: gold;
+  }
+
+  h2 {
+    color: #1a2b3c;
+    margin: 1rem 0;
+  }
+
+  p {
+    color: #666;
+    &.amount {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #00c6ff;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .mat-step-header .mat-step-icon-selected {
+    background-color: gold;
+    color: #1a2b3c;
+  }
+
+  .mat-step-header .mat-step-icon-state-done {
+    background-color: gold;
+    color: #1a2b3c;
+  }
+
+  .mat-stepper-vertical-line::before {
+    border-left-color: rgba(gold, 0.3);
+  }
+}
+
+@media (max-width: 600px) {
+  .card-security-group {
+    grid-template-columns: 1fr;
+  }
+}
