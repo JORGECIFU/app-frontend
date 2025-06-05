@@ -18,7 +18,10 @@
           <span matListItemTitle *ngIf="isExpanded">Planes</span>
         </a>
 
-        <!-- Aquí puedes agregar más elementos del menú -->
+        <a mat-list-item routerLink="maquina" routerLinkActive="active">
+          <mat-icon matListItemIcon>precision_manufacturing</mat-icon>
+          <span matListItemTitle *ngIf="isExpanded">Máquinas</span>
+        </a>
       </mat-nav-list>
     </mat-sidenav>
 

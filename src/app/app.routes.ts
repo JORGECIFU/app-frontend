@@ -7,6 +7,7 @@ import { AuthGuardService } from './auth/auth-guard.service';
 import { PasarelaPagosComponent } from './pasarela-pagos/pasarela-pagos.component';
 import { RegistrarUsuarioComponent } from './registrar-usuario/registrar-usuario.component';
 import { PlanComponent } from './plan/plan.component';
+import { MaquinaComponent } from './maquina/maquina.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -20,7 +21,7 @@ export const routes: Routes = [
     canActivate: [AuthGuardService],
     children: [
       { path: 'plan', component: PlanComponent },
-      // Aquí puedes agregar más rutas hijas protegidas
+      { path: 'maquina', component: MaquinaComponent },
       { path: '', redirectTo: 'plan', pathMatch: 'full' },
     ],
   },
