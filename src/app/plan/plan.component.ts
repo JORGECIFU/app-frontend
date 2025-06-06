@@ -6,6 +6,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { AuthRolesService } from '../services/auth-roles.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,8 +43,9 @@ export class PlanComponent implements OnInit {
   constructor(
     private planService: PlanService,
     private fb: FormBuilder,
+    private authRolesService: AuthRolesService,
   ) {
-    this.esAdmin = this.planService.esAdministrador();
+    this.esAdmin = this.authRolesService.esAdministrador();
     this.planForm = this.fb.group({
       nombre: ['', Validators.required],
       gananciaMin: ['', [Validators.required, Validators.min(0)]],

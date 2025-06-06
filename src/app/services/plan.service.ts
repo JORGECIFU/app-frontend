@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { AuthService } from '../auth/auth.service';
+import { AuthRolesService } from './auth-roles.service';
 
 export interface Plan {
   id?: number;
@@ -21,11 +22,12 @@ export class PlanService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private authRolesService: AuthRolesService,
   ) {}
 
   // Métodos para ADMINISTRADOR
   crearPlan(plan: Plan): Observable<Plan> {
-    if (!this.validarToken()) {
+    if (!this.authRolesService.esAdministrador()) {
       return throwError(() => new Error('No autorizado'));
     }
     const headers = new HttpHeaders()
@@ -35,7 +37,7 @@ export class PlanService {
   }
 
   actualizarPlan(id: number, plan: Plan): Observable<Plan> {
-    if (!this.validarToken()) {
+    if (!this.authRolesService.esAdministrador()) {
       return throwError(() => new Error('No autorizado'));
     }
     const headers = new HttpHeaders()
@@ -45,7 +47,7 @@ export class PlanService {
   }
 
   eliminarPlan(id: number): Observable<void> {
-    if (!this.validarToken()) {
+    if (!this.authRolesService.esAdministrador()) {
       return throwError(() => new Error('No autorizado'));
     }
     const headers = new HttpHeaders()
@@ -56,54 +58,26 @@ export class PlanService {
 
   // Métodos para USUARIO y ADMINISTRADOR
   obtenerPlan(id: number): Observable<Plan> {
-    return this.http.get<Plan>(`${this.baseUrl}/${id}`);
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.get<Plan>(`${this.baseUrl}/${id}`, { headers });
   }
 
   obtenerTodosLosPlanes(): Observable<Plan[]> {
-    return this.http.get<Plan[]>(this.baseUrl);
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.get<Plan[]>(this.baseUrl, { headers });
   }
 
   esAdministrador(): boolean {
-    try {
-      const token = this.authService.getToken();
-      if (!token) return false;
-
-      // Decodificar el token (la parte del payload)
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.rol === 'ADMINISTRADOR';
-    } catch {
-      return false;
-    }
+    return this.authRolesService.esAdministrador();
   }
 
-  private validarToken(): boolean {
-    const token = this.authService.getToken();
-    if (!token) {
-      console.error('No hay token disponible');
-      return false;
-    }
-
-    try {
-      // Decodificar el token
-      const payload = JSON.parse(atob(token.split('.')[1]));
-
-      // Verificar expiración
-      const now = Date.now() / 1000;
-      if (payload.exp && payload.exp < now) {
-        console.error('Token expirado');
-        return false;
-      }
-
-      // Verificar rol para operaciones de administrador
-      if (payload.rol !== 'ADMINISTRADOR') {
-        console.error('Usuario no es administrador');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error al validar el token:', error);
-      return false;
-    }
+  esUsuarioNormal(): boolean {
+    return this.authRolesService.esUsuarioNormal();
   }
 }

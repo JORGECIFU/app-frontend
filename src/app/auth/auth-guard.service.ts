@@ -13,30 +13,19 @@ export class AuthGuardService implements CanActivate {
   ) {}
 
   canActivate(): boolean | UrlTree {
-    // 1. Obtener el token desde el store
-    const token = this.authService.getState().token;
+    // 1. Obtener el token actual
+    const token = this.authService.getToken();
     if (!token) {
       return this.router.parseUrl('/login');
     }
 
-    // 2. Decodificar payload para extraer "exp"
-    try {
-      const payloadBase64 = token.split('.')[1];
-      const payloadJson = atob(payloadBase64);
-      const payload = JSON.parse(payloadJson);
-
-      const nowInSecs = Math.floor(Date.now() / 1000);
-      if (payload.exp && payload.exp > nowInSecs) {
-        return true; // Token aún válido
-      } else {
-        // Token expirado: limpiar store y redirigir
-        this.authService.clearTokens();
-        return this.router.parseUrl('/login');
-      }
-    } catch (err) {
-      // Token mal formado: limpiar y redirigir
-      this.authService.clearTokens();
-      return this.router.parseUrl('/home');
+    // 2. Verificar si el token está expirado
+    if (!this.authService.tokenEstaExpirado()) {
+      return true; // Token aún válido
     }
+
+    // Token expirado o inválido
+    this.authService.logout();
+    return this.router.parseUrl('/login');
   }
 }

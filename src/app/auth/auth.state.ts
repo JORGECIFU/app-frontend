@@ -1,9 +1,13 @@
 // src/app/auth/auth.state.ts
+export interface TokenPayload {
+  sub: string;
+  rol: string;
+  email: string;
+  iat: number;
+  exp: number;
+}
+
 export interface AuthState {
   token: string | null;
   refreshToken: string | null;
-  // Acción para guardar ambos tokens
-  setTokens: (token: string, refreshToken: string) => void;
-  // Acción para limpiar ambos tokens
-  clearTokens: () => void;
 }

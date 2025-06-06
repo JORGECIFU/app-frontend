@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { JwtInterceptor } from './auth/jwt.interceptor';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +12,7 @@ import {
 import { map, Observable, shareReplay } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common'; // Importar CommonModule
+import { AuthState } from './auth/auth.state';
 
 @Component({
   selector: 'app-root',
@@ -28,19 +27,15 @@ import { CommonModule } from '@angular/common'; // Importar CommonModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  providers: [
-    AuthService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
-      multi: true,
-    },
-  ],
+  providers: [],
 })
 export class AppComponent {
   title = 'Mineria Cripto 5.0';
-  // Observable que emitirá true cuando estemos en un “handset” (móvil/tablet pequeño)
+  // Observable que emitirá true cuando estemos en un "handset" (móvil/tablet pequeño)
   isHandset$: Observable<boolean>;
+  // Observable para el estado de autenticación
+  authState$: Observable<AuthState>;
+
   constructor(
     protected authService: AuthService,
     protected router: Router,
@@ -53,10 +48,11 @@ export class AppComponent {
         map((result) => result.matches),
         shareReplay(1),
       );
+    this.authState$ = this.authService.getAuthState();
   }
 
   onLogout() {
-    this.authService.clearTokens();
+    this.authService.logout();
     this.router.navigate(['/home']);
   }
 

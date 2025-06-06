@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
 import { AuthService } from '../auth/auth.service';
 import { Maquina } from '../models/maquina.model';
+import { AuthRolesService } from './auth-roles.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,40 +15,12 @@ export class MaquinaService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private authRolesService: AuthRolesService,
   ) {}
-
-  // Validación de token y rol de administrador
-  private validarToken(): boolean {
-    const token = this.authService.getToken();
-    if (!token) {
-      console.error('No hay token disponible');
-      return false;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const now = Date.now() / 1000;
-
-      if (payload.exp && payload.exp < now) {
-        console.error('Token expirado');
-        return false;
-      }
-
-      if (payload.rol !== 'ADMINISTRADOR') {
-        console.error('Usuario no es administrador');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error al validar el token:', error);
-      return false;
-    }
-  }
 
   // Métodos para ADMINISTRADOR
   crearMaquina(maquina: Maquina): Observable<Maquina> {
-    if (!this.validarToken()) {
+    if (!this.authRolesService.esAdministrador()) {
       return throwError(() => new Error('No autorizado'));
     }
     const headers = new HttpHeaders()
@@ -57,7 +30,7 @@ export class MaquinaService {
   }
 
   actualizarMaquina(id: number, maquina: Maquina): Observable<Maquina> {
-    if (!this.validarToken()) {
+    if (!this.authRolesService.esAdministrador()) {
       return throwError(() => new Error('No autorizado'));
     }
     const headers = new HttpHeaders()
@@ -69,7 +42,7 @@ export class MaquinaService {
   }
 
   eliminarMaquina(id: number): Observable<void> {
-    if (!this.validarToken()) {
+    if (!this.authRolesService.esAdministrador()) {
       return throwError(() => new Error('No autorizado'));
     }
     const headers = new HttpHeaders()
@@ -96,13 +69,6 @@ export class MaquinaService {
   }
 
   esAdministrador(): boolean {
-    try {
-      const token = this.authService.getToken();
-      if (!token) return false;
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.rol === 'ADMINISTRADOR';
-    } catch {
-      return false;
-    }
+    return this.authRolesService.esAdministrador();
   }
 }

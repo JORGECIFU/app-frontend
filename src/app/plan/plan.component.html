@@ -65,7 +65,11 @@
     <!-- Duración Column -->
     <ng-container matColumnDef="duracionDias">
       <th mat-header-cell *matHeaderCellDef>Duración</th>
-      <td mat-cell *matCellDef="let plan">{{ plan.duracionDias }} días</td>
+      <td mat-cell *matCellDef="let plan">
+        {{
+          plan.duracionDias === 30.4369 ? "1 mes" : plan.duracionDias + " días"
+        }}
+      </td>
     </ng-container>
 
     <!-- Acciones Column -->

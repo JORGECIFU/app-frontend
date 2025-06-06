@@ -6,11 +6,11 @@
 
     <!-- ======================
          Sección para pantallas grandes (desktop/tablet anchas)
-         Se muestra SOLO cuando NO estemos en “handset” -->
+         Se muestra SOLO cuando NO estemos en "handset" -->
     <ng-container *ngIf="!(isHandset$ | async); else mobileMenu">
-      <!-- Si el usuario está autenticado, mostramos “Cerrar Sesión” -->
+      <!-- Si el usuario está autenticado, mostramos "Cerrar Sesión" -->
       <button
-        *ngIf="authService.getState().token; else notLoggedDesktop"
+        *ngIf="(authState$ | async)?.token; else notLoggedDesktop"
         mat-button
         (click)="onLogout()"
         class="nav-button"
@@ -19,7 +19,7 @@
         Cerrar Sesión
       </button>
 
-      <!-- Si NO está autenticado, mostramos “Iniciar Sesión” y “Registrarse” -->
+      <!-- Si NO está autenticado, mostramos "Iniciar Sesión" y "Registrarse" -->
       <ng-template #notLoggedDesktop>
         <button mat-button (click)="navigateTo('/login')" class="nav-button">
           <mat-icon>login</mat-icon>
@@ -38,7 +38,7 @@
 
     <!-- ======================
          Sección para pantallas pequeñas (handset).
-         Se muestra un botón con un icono “menu” que abre un mat-menu -->
+         Se muestra un botón con un icono "menu" que abre un mat-menu -->
     <ng-template #mobileMenu>
       <!-- Icono hamburguesa -->
       <button
@@ -52,9 +52,7 @@
       <!-- Definimos el mat-menu con las mismas opciones -->
       <mat-menu #menuOptions="matMenu">
         <!-- Si el usuario está autenticado, solo agregamos la opción Logout -->
-        <ng-container
-          *ngIf="authService.getState().token; else notLoggedMobile"
-        >
+        <ng-container *ngIf="(authState$ | async)?.token; else notLoggedMobile">
           <button mat-menu-item (click)="onLogout()">
             <mat-icon>logout</mat-icon>
             <span>Cerrar Sesión</span>

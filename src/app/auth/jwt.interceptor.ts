@@ -1,98 +1,84 @@
-// src/app/auth/jwt.interceptor.ts
-
-import { Injectable } from '@angular/core';
-import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpErrorResponse,
-} from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, switchMap, filter, take } from 'rxjs/operators';
-import { AuthService } from './auth.service';
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, filter, switchMap, take } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
-@Injectable()
-export class JwtInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {}
-
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
-    // 1. Obtener el token del store
-    const token = this.authService.getState().token;
-
-    // 2. Clonar petición con token si existe
-    let authReq = request;
-    if (token) {
-      authReq = this.addTokenHeader(request, token);
-    }
-
-    // 4. Enviar petición y manejar 401 para el resto
-    return next.handle(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          return this.handle401Error(authReq, next);
-        }
-        return throwError(() => error);
-      }),
-    );
-  }
+export function JwtInterceptor(
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
   // Helper para clonar la petición y agregar el header Authorization
-  private addTokenHeader(request: HttpRequest<any>, token: string) {
-    return request.clone({
+  const addTokenHeader = (req: HttpRequest<any>, token: string) => {
+    return req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
       },
     });
-  }
+  };
 
   // Lógica de refresh de token ante un 401
-  private handle401Error(
-    request: HttpRequest<any>,
-    next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
+  const handle401Error = (req: HttpRequest<any>): Observable<HttpEvent<any>> => {
+    if (!isRefreshing) {
+      isRefreshing = true;
+      refreshTokenSubject.next(null);
 
-      const refreshToken = this.authService.getState().refreshToken;
-      if (!refreshToken) {
-        this.authService.clearTokens();
-        this.router.navigate(['/login']);
-        return throwError(() => new Error('No hay refresh token'));
-      }
-
-      return this.authService.refreshToken().pipe(
-        switchMap((res) => {
-          this.isRefreshing = false;
-          this.authService.getState().setTokens(res.token, res.refreshToken);
-          this.refreshTokenSubject.next(res.token);
-
-          return next.handle(this.addTokenHeader(request, res.token));
-        }),
-        catchError((err) => {
-          this.isRefreshing = false;
-          this.authService.clearTokens();
-          this.router.navigate(['/login']);
-          return throwError(() => err);
-        }),
-      );
-    } else {
-      return this.refreshTokenSubject.pipe(
-        filter((t) => t != null),
+      return authService.getAuthState().pipe(
         take(1),
-        switchMap((t) => next.handle(this.addTokenHeader(request, t!))),
+        switchMap((authState) => {
+          if (!authState?.refreshToken) {
+            authService.logout();
+            router.navigate(['/login']);
+            return throwError(() => new Error('No hay refresh token'));
+          }
+
+          return authService.refreshToken().pipe(
+            switchMap((res) => {
+              isRefreshing = false;
+              refreshTokenSubject.next(res.token);
+              return next(addTokenHeader(req, res.token));
+            }),
+            catchError((err) => {
+              isRefreshing = false;
+              authService.logout();
+              router.navigate(['/login']);
+              return throwError(() => err);
+            }),
+          );
+        }),
       );
     }
-  }
+
+    return refreshTokenSubject.pipe(
+      filter((token) => token !== null),
+      take(1),
+      switchMap((token) => next(addTokenHeader(req, token!))),
+    );
+  };
+
+  // Flujo principal del interceptor
+  return authService.getAuthState().pipe(
+    take(1),
+    switchMap((authState) => {
+      if (authState?.token) {
+        request = addTokenHeader(request, authState.token);
+      }
+
+      return next(request).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            return handle401Error(request);
+          }
+          return throwError(() => error);
+        }),
+      );
+    }),
+  );
 }

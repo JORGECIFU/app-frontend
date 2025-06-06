@@ -1,88 +1,156 @@
 // src/app/auth/auth.service.ts
-import { Injectable } from '@angular/core';
-import { ZustandBaseService } from 'ngx-zustand';
-import { StateCreator, createStore } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import type { AuthState } from './auth.state';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
+import { AuthState, TokenPayload } from './auth.state';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+
+const AUTH_TOKEN_KEY = 'auth_token';
+const AUTH_REFRESH_KEY = 'auth_refresh_token';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthService extends ZustandBaseService<AuthState> {
-  /**
-   * Definimos el estado inicial y las acciones.
-   */
-  initStore(): StateCreator<AuthState> {
-    return persist<AuthState>(
-      (set) => ({
-        token: null,
-        refreshToken: null,
-        setTokens: (token: string, refreshToken: string) =>
-          set(() => ({ token: token, refreshToken })),
-        clearTokens: () => set(() => ({ token: null, refreshToken: null })),
-      }),
-      {
-        name: 'authStore', // clave en sessionStorage
-        storage: createJSONStorage(() => sessionStorage),
-      },
-    ) as unknown as StateCreator<AuthState>;
+export class AuthService {
+  private state = new BehaviorSubject<AuthState>({
+    token: null,
+    refreshToken: null,
+  });
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(DOCUMENT) private document: Document,
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadFromStorage();
+    }
   }
 
-  /**
-   * Forzamos usar el store persistido.
-   */
-  override createStore() {
-    return createStore(this.initStore());
+  private loadFromStorage() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      const refreshToken = localStorage.getItem(AUTH_REFRESH_KEY);
+
+      if (token) {
+        this.state.next({ token, refreshToken });
+      }
+    }
   }
 
-  constructor(private http: HttpClient) {
-    super();
+  private saveToStorage(state: AuthState) {
+    if (isPlatformBrowser(this.platformId)) {
+      if (state.token) {
+        localStorage.setItem(AUTH_TOKEN_KEY, state.token);
+        if (state.refreshToken) {
+          localStorage.setItem(AUTH_REFRESH_KEY, state.refreshToken);
+        }
+      } else {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_REFRESH_KEY);
+      }
+    }
+    this.state.next(state);
   }
 
-  /**
-   * Llama a /api/auth/login, retorna { token, refreshToken }.
-   * Luego quien se suscriba (p. ej. AuthComponent) usará setTokens().
-   */
-  login(username: string, password: string) {
-    const url = `${environment.HOST_BACKEND}/api/auth/login`;
-    return this.http.post<{ token: string; refreshToken: string }>(url, {
-      username,
-      password,
-    });
+  private decodeToken(token: string): TokenPayload | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch (error) {
+      console.error('[AuthService] Error al decodificar token:', error);
+      return null;
+    }
   }
 
-  /**
-   * Llama a /api/auth/refresh con el refreshToken actual en el store.
-   * Devuelve el nuevo { token, refreshToken }.
-   */
-  refreshToken() {
-    const rt = this.getState().refreshToken;
+  getAuthState(): Observable<AuthState> {
+    return this.state.asObservable();
+  }
+
+  getToken(): string | null {
+    return this.state.value.token;
+  }
+
+  getRefreshToken(): string | null {
+    return this.state.value.refreshToken;
+  }
+
+  getRol(): string {
+    const token = this.getToken();
+    if (!token) {
+      return '';
+    }
+
+    const payload = this.decodeToken(token);
+    return payload?.rol || '';
+  }
+
+  esAdministrador(): boolean {
+    const rol = this.getRol();
+    return rol === 'ADMINISTRADOR';
+  }
+
+  esUsuario(): boolean {
+    const rol = this.getRol();
+    return rol === 'USUARIO';
+  }
+
+  logout(): void {
+    this.clearState();
+  }
+
+  getEmail(): string {
+    const token = this.getToken();
+    if (!token) return '';
+
+    const payload = this.decodeToken(token);
+    return payload?.sub || '';
+  }
+
+  tokenEstaExpirado(): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return true;
+    }
+
+    const payload = this.decodeToken(token);
+    if (!payload) {
+      return true;
+    }
+
+    const ahora = Math.floor(Date.now() / 1000);
+    return payload.exp < ahora;
+  }
+
+  login(
+    username: string,
+    password: string,
+  ): Observable<{ token: string; refreshToken: string }> {
+    this.clearState();
+    return this.http.post<{ token: string; refreshToken: string }>(
+      `${environment.HOST_BACKEND}/api/auth/login`,
+      { username, password },
+    );
+  }
+
+  setTokens(token: string, refreshToken: string): void {
+    this.saveToStorage({ token, refreshToken });
+  }
+
+  private clearState(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_REFRESH_KEY);
+    }
+    this.state.next({ token: null, refreshToken: null });
+  }
+
+  refreshToken(): Observable<{ token: string; refreshToken: string }> {
+    const rt = this.getRefreshToken();
     return this.http.post<{ token: string; refreshToken: string }>(
       `${environment.HOST_BACKEND}/api/auth/refresh`,
       { refreshToken: rt },
     );
-  }
-
-  /**
-   * Obtiene el token actual sin suscribirse.
-   */
-  getToken(): string | null {
-    return this.getState().token;
-  }
-
-  /**
-   * Obtiene el refreshToken actual sin suscribirse.
-   */
-  getRefreshToken(): string | null {
-    return this.getState().refreshToken;
-  }
-
-  /**
-   * Limpia ambos tokens del store (usado en logout o al expirar).
-   */
-  clearTokens() {
-    this.getState().clearTokens();
   }
 }

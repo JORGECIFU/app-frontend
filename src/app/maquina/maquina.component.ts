@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MaquinaService } from '../services/maquina.service';
 import { Maquina } from '../models/maquina.model';
+import { AuthRolesService } from '../services/auth-roles.service';
 
 @Component({
   selector: 'app-maquina',
@@ -41,8 +42,9 @@ export class MaquinaComponent implements OnInit {
   constructor(
     private maquinaService: MaquinaService,
     private fb: FormBuilder,
+    private authRolesService: AuthRolesService,
   ) {
-    this.esAdmin = this.maquinaService.esAdministrador();
+    this.esAdmin = this.authRolesService.esAdministrador();
     this.maquinaForm = this.fb.group({
       serial: ['', Validators.required],
       estado: ['DISPONIBLE', Validators.required],
