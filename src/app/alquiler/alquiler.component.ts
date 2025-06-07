@@ -1,66 +1,39 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
+import { AdminAlquilerComponent } from './admin-alquiler/admin-alquiler.component';
+import { UserAlquilerComponent } from './user-alquiler/user-alquiler.component';
 import { AlquilerService } from '../services/alquiler.service';
-import { Alquiler, PreviewPlan } from '../models/alquiler.model';
 import { AuthRolesService } from '../services/auth-roles.service';
+import { Alquiler, PreviewPlan } from '../models/alquiler.model';
 
 @Component({
   selector: 'app-alquiler',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatCardModule,
-    MatTabsModule,
-  ],
-  templateUrl: './alquiler.component.html',
-  styleUrl: './alquiler.component.scss',
+  imports: [CommonModule, AdminAlquilerComponent, UserAlquilerComponent],
+  template: `
+    @if (esAdmin) {
+      <app-admin-alquiler
+        [alquileres]="alquileres"
+        [previewsPlanes]="previewsPlanes"
+      >
+      </app-admin-alquiler>
+    } @else {
+      <app-user-alquiler> </app-user-alquiler>
+    }
+  `,
 })
 export class AlquilerComponent implements OnInit {
   alquileres: Alquiler[] = [];
   previewsPlanes: PreviewPlan[] = [];
   esAdmin: boolean = false;
-
-  // Columnas para la tabla de alquileres
-  columnasAlquileres: string[] = [
-    'id',
-    'usuarioId',
-    'maquinaId',
-    'planId',
-    'fechaInicio',
-    'fechaFin',
-    'precioAlquiler',
-    'costoTotal',
-    'estado',
-    'montoDevuelto',
-    'gananciaPlataforma',
-    'acciones',
-  ];
-
-  // Columnas para la tabla de previews
-  columnasPreviews: string[] = [
-    'planId',
-    'planNombre',
-    'duracionDias',
-    'gananciaPromedioDiaria',
-    'precioBruto',
-    'precioAlquiler',
-    'gananciaMaxUsuario',
-    'ingresoPlataforma',
-  ];
+  planId?: number;
 
   constructor(
     private alquilerService: AlquilerService,
     private authRolesService: AuthRolesService,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar,
   ) {
     this.esAdmin = this.authRolesService.esAdministrador();
@@ -68,26 +41,25 @@ export class AlquilerComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.esAdmin) {
-      this.cargarAlquileres();
-      this.cargarPreviewsPlanes();
+      this.cargarDatosAdmin();
+    } else {
+      this.procesarQueryParams();
     }
   }
 
-  cargarAlquileres(): void {
+  private cargarDatosAdmin(): void {
     this.alquilerService.obtenerAlquileres().subscribe({
-      next: (data) => {
-        this.alquileres = data;
+      next: (alquileres) => {
+        this.alquileres = alquileres;
       },
       error: (error) => {
         this.mostrarError('Error al cargar los alquileres');
       },
     });
-  }
 
-  cargarPreviewsPlanes(): void {
     this.alquilerService.obtenerPreviewTodosPlanes().subscribe({
-      next: (data) => {
-        this.previewsPlanes = data;
+      next: (previews) => {
+        this.previewsPlanes = previews;
       },
       error: (error) => {
         this.mostrarError('Error al cargar la información de los planes');
@@ -95,26 +67,10 @@ export class AlquilerComponent implements OnInit {
     });
   }
 
-  cerrarAlquiler(id: number): void {
-    if (confirm('¿Está seguro de cerrar este alquiler?')) {
-      this.alquilerService.cerrarAlquiler(id).subscribe({
-        next: () => {
-          this.mostrarExito('Alquiler cerrado correctamente');
-          this.cargarAlquileres(); // Recargar la lista
-        },
-        error: (error) => {
-          this.mostrarError('Error al cerrar el alquiler');
-        },
-      });
-    }
-  }
-
-  private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['success-snackbar'],
+  private procesarQueryParams(): void {
+    this.route.queryParams.subscribe((params) => {
+      const planIdParam = params['planId'];
+      this.planId = planIdParam ? Number(planIdParam) : undefined;
     });
   }
 

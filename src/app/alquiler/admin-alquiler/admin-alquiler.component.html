@@ -1,0 +1,194 @@
+<mat-tab-group>
+  <!-- Tab de Alquileres -->
+  <mat-tab label="Alquileres">
+    <div class="tab-content">
+      <h2>Listado de Alquileres</h2>
+      <table mat-table [dataSource]="alquileres" class="mat-elevation-z8">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let alquiler">{{ alquiler.id }}</td>
+        </ng-container>
+
+        <!-- Usuario ID Column -->
+        <ng-container matColumnDef="usuarioId">
+          <th mat-header-cell *matHeaderCellDef>Usuario ID</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.usuarioId }}
+          </td>
+        </ng-container>
+
+        <!-- Máquina ID Column -->
+        <ng-container matColumnDef="maquinaId">
+          <th mat-header-cell *matHeaderCellDef>Máquina ID</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.maquinaId }}
+          </td>
+        </ng-container>
+
+        <!-- Plan ID Column -->
+        <ng-container matColumnDef="planId">
+          <th mat-header-cell *matHeaderCellDef>Plan ID</th>
+          <td mat-cell *matCellDef="let alquiler">{{ alquiler.planId }}</td>
+        </ng-container>
+
+        <!-- Fecha Inicio Column -->
+        <ng-container matColumnDef="fechaInicio">
+          <th mat-header-cell *matHeaderCellDef>Fecha Inicio</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.fechaInicio | date: "short" }}
+          </td>
+        </ng-container>
+
+        <!-- Fecha Fin Column -->
+        <ng-container matColumnDef="fechaFin">
+          <th mat-header-cell *matHeaderCellDef>Fecha Fin</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.fechaFin | date: "short" }}
+          </td>
+        </ng-container>
+
+        <!-- Precio Alquiler Column -->
+        <ng-container matColumnDef="precioAlquiler">
+          <th mat-header-cell *matHeaderCellDef>Precio Alquiler</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.precioAlquiler | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Costo Total Column -->
+        <ng-container matColumnDef="costoTotal">
+          <th mat-header-cell *matHeaderCellDef>Costo Total</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.costoTotal | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Estado Column -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td
+            mat-cell
+            *matCellDef="let alquiler"
+            [class]="alquiler.estado.toLowerCase()"
+          >
+            {{ alquiler.estado }}
+          </td>
+        </ng-container>
+
+        <!-- Monto Devuelto Column -->
+        <ng-container matColumnDef="montoDevuelto">
+          <th mat-header-cell *matHeaderCellDef>Monto Devuelto</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.montoDevuelto | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Ganancia Plataforma Column -->
+        <ng-container matColumnDef="gananciaPlataforma">
+          <th mat-header-cell *matHeaderCellDef>Ganancia Plataforma</th>
+          <td mat-cell *matCellDef="let alquiler">
+            {{ alquiler.gananciaPlataforma | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Acciones Column -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let alquiler">
+            @if (alquiler.estado === "ACTIVO") {
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="cerrarAlquiler(alquiler.id)"
+                title="Cerrar Alquiler"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasAlquileres"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasAlquileres"></tr>
+      </table>
+    </div>
+  </mat-tab>
+
+  <!-- Tab de Preview de Planes -->
+  <mat-tab label="Previsualización de Planes">
+    <div class="tab-content">
+      <h2>Información de Planes</h2>
+      <table mat-table [dataSource]="previewsPlanes" class="mat-elevation-z8">
+        <!-- Plan ID Column -->
+        <ng-container matColumnDef="planId">
+          <th mat-header-cell *matHeaderCellDef>ID Plan</th>
+          <td mat-cell *matCellDef="let preview">{{ preview.planId }}</td>
+        </ng-container>
+
+        <!-- Nombre Plan Column -->
+        <ng-container matColumnDef="planNombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let preview">
+            {{ preview.planNombre }}
+          </td>
+        </ng-container>
+
+        <!-- Duración Column -->
+        <ng-container matColumnDef="duracionDias">
+          <th mat-header-cell *matHeaderCellDef>Duración</th>
+          <td mat-cell *matCellDef="let preview">
+            {{
+              preview.duracionDias === 30.4369
+                ? "1 mes"
+                : preview.duracionDias + " días"
+            }}
+          </td>
+        </ng-container>
+
+        <!-- Ganancia Promedio Column -->
+        <ng-container matColumnDef="gananciaPromedioDiaria">
+          <th mat-header-cell *matHeaderCellDef>Ganancia Promedio Diaria</th>
+          <td mat-cell *matCellDef="let preview">
+            {{ preview.gananciaPromedioDiaria | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Precio Bruto Column -->
+        <ng-container matColumnDef="precioBruto">
+          <th mat-header-cell *matHeaderCellDef>Precio Bruto</th>
+          <td mat-cell *matCellDef="let preview">
+            {{ preview.precioBruto | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Precio Alquiler Column -->
+        <ng-container matColumnDef="precioAlquiler">
+          <th mat-header-cell *matHeaderCellDef>Precio Alquiler</th>
+          <td mat-cell *matCellDef="let preview">
+            {{ preview.precioAlquiler | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Ganancia Máxima Usuario Column -->
+        <ng-container matColumnDef="gananciaMaxUsuario">
+          <th mat-header-cell *matHeaderCellDef>Ganancia Máxima Usuario</th>
+          <td mat-cell *matCellDef="let preview">
+            {{ preview.gananciaMaxUsuario | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <!-- Ingreso Plataforma Column -->
+        <ng-container matColumnDef="ingresoPlataforma">
+          <th mat-header-cell *matHeaderCellDef>Ingreso Plataforma</th>
+          <td mat-cell *matCellDef="let preview">
+            {{ preview.ingresoPlataforma | currency: "USD" }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasPreviews"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasPreviews"></tr>
+      </table>
+    </div>
+  </mat-tab>
+</mat-tab-group>
