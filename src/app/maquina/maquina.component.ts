@@ -18,7 +18,7 @@ import { Maquina } from '../interfaces/maquina';
 import { MatTableDataSource } from '@angular/material/table';
 import { AuthRolesService } from '../services/auth-roles.service';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({

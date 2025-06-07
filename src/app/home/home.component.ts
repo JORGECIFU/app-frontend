@@ -11,8 +11,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { Observable } from 'rxjs';
 
-import { Plan } from './plan.model';
-import { PlanService } from './plan.service';
+import { Plan } from '../models/plan.model';
+import { PlanService } from '../services/plan.service';
 
 @Component({
   selector: 'app-home',

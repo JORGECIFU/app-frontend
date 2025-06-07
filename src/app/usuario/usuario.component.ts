@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../services/auth.service';
 import { AuthRolesService } from '../services/auth-roles.service';
 import { UsuarioService } from '../services/usuario.service';
 import { Usuario } from '../models/usuario.model';

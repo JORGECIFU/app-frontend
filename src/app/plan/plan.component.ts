@@ -16,8 +16,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
-import { PlanService, Plan } from '../services/plan.service';
 import Swal from 'sweetalert2';
+import { Plan } from '../models/plan.model';
+import { PlanService } from '../services/plan.service';
 
 @Component({
   selector: 'app-plan',
@@ -65,8 +66,11 @@ export class PlanComponent implements OnInit {
 
   cargarPlanes() {
     this.planService.obtenerTodosLosPlanes().subscribe({
-      next: (planes) => (this.planes = planes),
-      error: (error) => console.error('Error al cargar planes:', error),
+      next: (planes: Plan[]) => (this.planes = planes),
+      error: (error: unknown) => {
+        console.error('Error al cargar planes:', error);
+        Swal.fire('Error', 'No se pudieron cargar los planes', 'error');
+      },
     });
   }
 
@@ -79,14 +83,21 @@ export class PlanComponent implements OnInit {
           next: () => {
             this.cargarPlanes();
             this.resetForm();
+            Swal.fire('¡Éxito!', 'Plan actualizado correctamente', 'success');
           },
-          error: (error) => {
+          error: (error: unknown) => {
             console.error('Error al actualizar plan:', error);
-            if (error.message === 'No autorizado') {
-              alert('No tiene permisos para actualizar planes');
+            if ((error as any).message === 'No autorizado') {
+              Swal.fire(
+                'Error',
+                'No tiene permisos para actualizar planes',
+                'error',
+              );
             } else {
-              alert(
+              Swal.fire(
+                'Error',
                 'Error al actualizar el plan. Verifique su conexión e intente nuevamente.',
+                'error',
               );
             }
           },
@@ -96,14 +107,21 @@ export class PlanComponent implements OnInit {
           next: () => {
             this.cargarPlanes();
             this.resetForm();
+            Swal.fire('¡Éxito!', 'Plan creado correctamente', 'success');
           },
-          error: (error) => {
+          error: (error: unknown) => {
             console.error('Error al crear plan:', error);
-            if (error.message === 'No autorizado') {
-              alert('No tiene permisos para crear planes');
+            if ((error as any).message === 'No autorizado') {
+              Swal.fire(
+                'Error',
+                'No tiene permisos para crear planes',
+                'error',
+              );
             } else {
-              alert(
+              Swal.fire(
+                'Error',
                 'Error al crear el plan. Verifique su conexión e intente nuevamente.',
+                'error',
               );
             }
           },

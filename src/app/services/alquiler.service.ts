@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from './auth.service';
 import { AuthRolesService } from './auth-roles.service';
 import { Alquiler, PreviewPlan } from '../models/alquiler.model';
 

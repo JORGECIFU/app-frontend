@@ -3,7 +3,7 @@ import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../enviroments/enviroment';
-import { AuthState, TokenPayload } from './auth.state';
+import { AuthState, TokenPayload } from '../auth/auth.state';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 const AUTH_TOKEN_KEY = 'auth_token';
