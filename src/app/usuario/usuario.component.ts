@@ -1,12 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../services/auth.service';
 import { AuthRolesService } from '../services/auth-roles.service';
 import { UsuarioService } from '../services/usuario.service';
 import { Usuario } from '../models/usuario.model';
-import { MatTableDataSource } from '@angular/material/table';
 import Swal from 'sweetalert2';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AdminProfileComponent } from './admin-profile/admin-profile.component';
@@ -14,7 +23,17 @@ import { AdminProfileComponent } from './admin-profile/admin-profile.component';
 @Component({
   selector: 'app-usuario',
   standalone: true,
-  imports: [CommonModule, UserProfileComponent, AdminProfileComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    UserProfileComponent,
+    AdminProfileComponent,
+  ],
   templateUrl: './usuario.component.html',
   styleUrl: './usuario.component.scss',
 })

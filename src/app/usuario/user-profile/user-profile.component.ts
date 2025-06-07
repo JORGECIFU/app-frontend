@@ -38,6 +38,7 @@ import { Router, RouterModule } from '@angular/router';
     MatProgressSpinnerModule,
     RouterModule,
   ],
+  providers: [CuentaService],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
@@ -59,7 +60,10 @@ export class UserProfileComponent implements OnInit, OnChanges {
     private cuentaService: CuentaService,
     private router: Router,
   ) {
-    if (!router) {
+    if (!this.cuentaService) {
+      console.error('CuentaService no está inyectado correctamente');
+    }
+    if (!this.router) {
       console.error('Router no está inyectado correctamente');
     }
   }

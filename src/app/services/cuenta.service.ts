@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { Observable, tap, throwError, switchMap } from 'rxjs';
+import { Observable, throwError, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
 
 interface Usuario {
@@ -36,6 +36,7 @@ export class CuentaService {
 
   obtenerCuenta(usuarioId: number): Observable<Cuenta> {
     const token = this.authService.getToken();
+    
     if (!token) {
       return throwError(() => new Error('No hay token de autenticación'));
     }
