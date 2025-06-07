@@ -1,10 +1,11 @@
 // src/app/services/plan.service.ts
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
 import { Plan } from '../models/plan.model';
 import { environment } from '../../enviroments/enviroment';
+import { AuthService } from './auth.service';
 
 interface PlanPreview {
   planId: number;
@@ -29,7 +30,10 @@ export type PlanConPrecios = Plan & {
 export class PlanService {
   private baseUrl = environment.HOST_BACKEND;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {}
 
   obtenerTodosLosPlanes(): Observable<Plan[]> {
     return this.http.get<Plan[]>(`${this.baseUrl}/api/planes`);
@@ -66,11 +70,23 @@ export class PlanService {
   }
 
   crearPlan(plan: Plan): Observable<Plan> {
-    return this.http.post<Plan>(`${this.baseUrl}/api/planes`, plan);
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.post<Plan>(`${this.baseUrl}/api/planes`, plan, {
+      headers,
+    });
   }
 
   actualizarPlan(id: number, plan: Plan): Observable<Plan> {
-    return this.http.put<Plan>(`${this.baseUrl}/api/planes/${id}`, plan);
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.put<Plan>(`${this.baseUrl}/api/planes/${id}`, plan, {
+      headers,
+    });
   }
 
   eliminarPlan(id: number): Observable<void> {

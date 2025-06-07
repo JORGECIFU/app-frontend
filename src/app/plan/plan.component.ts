@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Plan } from '../models/plan.model';
 import { PlanService, PlanConPrecios } from '../services/plan.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-plan',

@@ -36,7 +36,7 @@ export class CuentaService {
 
   obtenerCuenta(usuarioId: number): Observable<Cuenta> {
     const token = this.authService.getToken();
-    
+
     if (!token) {
       return throwError(() => new Error('No hay token de autenticación'));
     }
@@ -80,7 +80,7 @@ export class CuentaService {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<Usuario>(`${this.baseUrl}/plataforma/usuario/actual`, {
+    return this.http.get<Usuario>(`${this.baseUrl}/usuarios/me`, {
       headers,
     });
   }

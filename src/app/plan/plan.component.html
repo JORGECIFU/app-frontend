@@ -160,7 +160,7 @@
                 </div>
               </div>
 
-              <div class="detail-item">
+              <div class="detail-item cian-detail">
                 <mat-icon class="detail-icon">schedule</mat-icon>
                 <div class="detail-text">
                   <p class="detail-label">Duración</p>
@@ -173,16 +173,16 @@
               <div class="detail-item">
                 <mat-icon class="detail-icon">money_off</mat-icon>
                 <div class="detail-text">
-                  <p class="detail-label">Precio Original</p>
+                  <p class="detail-label">Precio Anterior</p>
                   <p
                     class="detail-value text-muted text-decoration-line-through"
                   >
-                    {{ formatearPrecio(plan.precioBruto || 0) }}
+                    <s>{{ formatearPrecio(plan.precioBruto || 0) }}</s>
                   </p>
                 </div>
               </div>
 
-              <div class="detail-item">
+              <div class="detail-item green-detail">
                 <mat-icon class="detail-icon" color="primary"
                   >payments</mat-icon
                 >
@@ -194,7 +194,7 @@
                 </div>
               </div>
 
-              <div class="detail-item">
+              <div class="detail-item gold-detail">
                 <mat-icon class="detail-icon" color="accent">savings</mat-icon>
                 <div class="detail-text">
                   <p class="detail-label">Rendimientos Esperados</p>
