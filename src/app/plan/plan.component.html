@@ -145,7 +145,7 @@
                 <div class="detail-text">
                   <p class="detail-label">Ganancia Mínima</p>
                   <p class="detail-value">
-                    {{ plan.gananciaMin.toFixed(2) }} USD/día
+                    {{ formatearPrecio(plan.gananciaMin || 0) }} diario
                   </p>
                 </div>
               </div>
@@ -155,7 +155,7 @@
                 <div class="detail-text">
                   <p class="detail-label">Ganancia Máxima</p>
                   <p class="detail-value">
-                    {{ plan.gananciaMax.toFixed(2) }} USD/día
+                    {{ formatearPrecio(plan.gananciaMax || 0) }} diario
                   </p>
                 </div>
               </div>
@@ -165,11 +165,41 @@
                 <div class="detail-text">
                   <p class="detail-label">Duración</p>
                   <p class="detail-value">
-                    {{
-                      plan.duracionDias === 30.4369
-                        ? "1 mes"
-                        : plan.duracionDias + " días"
-                    }}
+                    {{ formatearDuracion(plan.duracionDias) }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <mat-icon class="detail-icon">money_off</mat-icon>
+                <div class="detail-text">
+                  <p class="detail-label">Precio Original</p>
+                  <p
+                    class="detail-value text-muted text-decoration-line-through"
+                  >
+                    {{ formatearPrecio(plan.precioBruto || 0) }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <mat-icon class="detail-icon" color="primary"
+                  >payments</mat-icon
+                >
+                <div class="detail-text">
+                  <p class="detail-label">Precio Actual</p>
+                  <p class="detail-value text-success fw-bold">
+                    {{ formatearPrecio(plan.precioAlquiler || 0) }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <mat-icon class="detail-icon" color="accent">savings</mat-icon>
+                <div class="detail-text">
+                  <p class="detail-label">Rendimientos Esperados</p>
+                  <p class="detail-value text-info">
+                    {{ formatearPrecio(plan.gananciaMaxUsuario || 0) }}
                   </p>
                 </div>
               </div>

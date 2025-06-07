@@ -18,7 +18,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Plan } from '../models/plan.model';
-import { PlanService } from '../services/plan.service';
+import { PlanService, PlanConPrecios } from '../services/plan.service';
 
 @Component({
   selector: 'app-plan',
@@ -39,7 +39,7 @@ import { PlanService } from '../services/plan.service';
   styleUrls: ['./plan.component.scss'],
 })
 export class PlanComponent implements OnInit {
-  planes: Plan[] = [];
+  planes: PlanConPrecios[] = [];
   planForm: FormGroup;
   esAdmin: boolean = false;
   modoEdicion = false;
@@ -65,8 +65,10 @@ export class PlanComponent implements OnInit {
   }
 
   cargarPlanes() {
-    this.planService.obtenerTodosLosPlanes().subscribe({
-      next: (planes: Plan[]) => (this.planes = planes),
+    this.planService.obtenerPlanesConPrecios().subscribe({
+      next: (planes) => {
+        this.planes = planes;
+      },
       error: (error: unknown) => {
         console.error('Error al cargar planes:', error);
         Swal.fire('Error', 'No se pudieron cargar los planes', 'error');
@@ -194,5 +196,20 @@ export class PlanComponent implements OnInit {
       return '/vip_img.webp';
     }
     return '/basic_img.webp'; // imagen por defecto
+  }
+
+  formatearDuracion(duracionDias: number): string {
+    return duracionDias === 30.4369
+      ? '1 Mes'
+      : `${Math.round(duracionDias)} días`;
+  }
+
+  formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(precio);
   }
 }

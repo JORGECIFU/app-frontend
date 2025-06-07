@@ -2,6 +2,7 @@
 export interface Plan {
   id: number;
   nombre: string;
+  descripcion: string;
   gananciaMin: number;
   gananciaMax: number;
   duracionDias: number;
