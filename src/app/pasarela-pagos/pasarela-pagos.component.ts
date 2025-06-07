@@ -10,9 +10,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatStepper } from '@angular/material/stepper';
+import { CuentaService } from '../services/cuenta.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TabService } from '../services/tab.service';
 
 @Component({
   selector: 'app-pasarela-pagos',
@@ -23,8 +26,8 @@ import { MatStepper } from '@angular/material/stepper';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    RouterLink,
     CommonModule,
+    MatSnackBarModule,
   ],
   templateUrl: './pasarela-pagos.component.html',
   styleUrl: './pasarela-pagos.component.scss',
@@ -35,7 +38,13 @@ export class PasarelaPagosComponent implements OnInit {
   datosTarjetaFormGroup!: FormGroup;
   pagoCompletado: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(
+    private _formBuilder: FormBuilder,
+    private router: Router,
+    private cuentaService: CuentaService,
+    private snackBar: MatSnackBar,
+    private tabService: TabService,
+  ) {}
 
   ngOnInit() {
     this.datosPersonalesFormGroup = this._formBuilder.group({
@@ -69,11 +78,47 @@ export class PasarelaPagosComponent implements OnInit {
 
   procesarPago(stepper: MatStepper) {
     if (this.datosTarjetaFormGroup.valid) {
-      // Simulamos un tiempo de procesamiento
-      setTimeout(() => {
-        this.pagoCompletado = true;
-        stepper.next();
-      }, 1000);
+      const montoStr = this.datosTarjetaFormGroup.get('montoCtrl')?.value;
+      const monto = parseFloat(montoStr);
+
+      if (isNaN(monto) || monto <= 0) {
+        this.snackBar.open('El monto debe ser mayor a 0', 'Cerrar', {
+          duration: 5000,
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar'],
+        });
+        return;
+      }
+
+      this.cuentaService
+        .realizarTransaccion({
+          tipo: 'RECARGA_PLATAFORMA' as const,
+          monto: Number(monto.toFixed(2)), // Aseguramos 2 decimales y tipo number
+        })
+        .subscribe({
+          next: () => {
+            this.pagoCompletado = true;
+            stepper.next();
+            this.snackBar.open('¡Pago procesado exitosamente!', 'Cerrar', {
+              duration: 5000,
+              verticalPosition: 'top',
+              panelClass: ['success-snackbar'],
+            });
+          },
+          error: (error) => {
+            console.error('Error al procesar el pago:', error);
+            let mensajeError =
+              'Error al procesar el pago. Por favor, intente nuevamente.';
+            if (error.error?.message) {
+              mensajeError = error.error.message;
+            }
+            this.snackBar.open(mensajeError, 'Cerrar', {
+              duration: 5000,
+              verticalPosition: 'top',
+              panelClass: ['error-snackbar'],
+            });
+          },
+        });
     }
   }
 
@@ -94,5 +139,11 @@ export class PasarelaPagosComponent implements OnInit {
         { emitEvent: false },
       );
     }
+  }
+
+  volverAMiSaldo() {
+    // Establecer el índice para mostrar la pestaña de "Mi Saldo"
+    this.tabService.setSelectedTabIndex(1); // El índice 1 corresponde a la pestaña "Mi Saldo"
+    this.router.navigate(['/system/usuario']);
   }
 }

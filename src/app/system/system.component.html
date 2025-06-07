@@ -13,14 +13,33 @@
         </div>
 
         <!-- Enlaces del menú -->
+        @if (rol === "ADMINISTRADOR") {
+          <a mat-list-item routerLink="usuario" routerLinkActive="active">
+            <mat-icon matListItemIcon>group</mat-icon>
+            <span matListItemTitle *ngIf="isExpanded">Usuarios</span>
+          </a>
+        } @else {
+          <a mat-list-item routerLink="usuario" routerLinkActive="active">
+            <mat-icon matListItemIcon>account_circle</mat-icon>
+            <span matListItemTitle *ngIf="isExpanded">Mi Perfil</span>
+          </a>
+        }
+
         <a mat-list-item routerLink="plan" routerLinkActive="active">
           <mat-icon matListItemIcon>assignment</mat-icon>
           <span matListItemTitle *ngIf="isExpanded">Planes</span>
         </a>
 
-        <a mat-list-item routerLink="maquina" routerLinkActive="active">
-          <mat-icon matListItemIcon>precision_manufacturing</mat-icon>
-          <span matListItemTitle *ngIf="isExpanded">Máquinas</span>
+        @if (rol === "ADMINISTRADOR") {
+          <a mat-list-item routerLink="maquina" routerLinkActive="active">
+            <mat-icon matListItemIcon>precision_manufacturing</mat-icon>
+            <span matListItemTitle *ngIf="isExpanded">Máquinas</span>
+          </a>
+        }
+
+        <a mat-list-item routerLink="alquiler" routerLinkActive="active">
+          <mat-icon matListItemIcon>receipt_long</mat-icon>
+          <span matListItemTitle *ngIf="isExpanded">Alquileres</span>
         </a>
       </mat-nav-list>
     </mat-sidenav>

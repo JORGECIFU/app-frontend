@@ -1,0 +1,27 @@
+<div class="perfil-container">
+  @if (!esAdmin) {
+    <app-user-profile
+      [perfilForm]="perfilForm"
+      [modoEdicion]="modoEdicion"
+      [usuario]="usuario"
+      (editar)="toggleEdicion()"
+      (guardar)="guardarCambios()"
+      (eliminar)="iniciarProcesoEliminacion()"
+      (cancelar)="toggleEdicion()"
+    />
+  } @else {
+    <app-admin-profile
+      [perfilForm]="perfilForm"
+      [adminForm]="adminForm"
+      [modoEdicion]="modoEdicion"
+      [usuario]="usuario"
+      [usuarios]="usuarios"
+      [displayedColumns]="displayedColumns"
+      (editar)="toggleEdicion()"
+      (guardar)="guardarCambios()"
+      (cancelar)="toggleEdicion()"
+      (crearAdmin)="crearAdministrador()"
+      (promover)="promoverAAdministrador($event)"
+    />
+  }
+</div>

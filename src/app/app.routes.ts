@@ -8,13 +8,14 @@ import { PasarelaPagosComponent } from './pasarela-pagos/pasarela-pagos.componen
 import { RegistrarUsuarioComponent } from './registrar-usuario/registrar-usuario.component';
 import { PlanComponent } from './plan/plan.component';
 import { MaquinaComponent } from './maquina/maquina.component';
+import { AlquilerComponent } from './alquiler/alquiler.component';
+import { UsuarioComponent } from './usuario/usuario.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'registrar-usuario', component: RegistrarUsuarioComponent },
-  { path: 'pasarela-pagos', component: PasarelaPagosComponent },
   {
     path: 'system',
     component: SystemComponent,
@@ -22,6 +23,9 @@ export const routes: Routes = [
     children: [
       { path: 'plan', component: PlanComponent },
       { path: 'maquina', component: MaquinaComponent },
+      { path: 'alquiler', component: AlquilerComponent },
+      { path: 'usuario', component: UsuarioComponent },
+      { path: 'pasarela-pagos', component: PasarelaPagosComponent },
       { path: '', redirectTo: 'plan', pathMatch: 'full' },
     ],
   },

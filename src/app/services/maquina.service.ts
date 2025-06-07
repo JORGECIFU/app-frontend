@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { environment } from '../../enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { AuthService } from '../auth/auth.service';
-import { Maquina } from '../models/maquina.model';
+import { Maquina } from '../interfaces/maquina';
 import { AuthRolesService } from './auth-roles.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MaquinaService {
-  private baseUrl = `${environment.HOST_BACKEND}/api/maquinas`;
+  private apiUrl = `${environment.apiUrl}/maquinas`;
 
   constructor(
     private http: HttpClient,
@@ -26,7 +26,7 @@ export class MaquinaService {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.post<Maquina>(this.baseUrl, maquina, { headers });
+    return this.http.post<Maquina>(this.apiUrl, maquina, { headers });
   }
 
   actualizarMaquina(id: number, maquina: Maquina): Observable<Maquina> {
@@ -36,7 +36,7 @@ export class MaquinaService {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.put<Maquina>(`${this.baseUrl}/${id}`, maquina, {
+    return this.http.put<Maquina>(`${this.apiUrl}/${id}`, maquina, {
       headers,
     });
   }
@@ -48,7 +48,7 @@ export class MaquinaService {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.delete<void>(`${this.baseUrl}/${id}`, { headers });
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers });
   }
 
   // Métodos para USUARIO y ADMINISTRADOR
@@ -57,15 +57,15 @@ export class MaquinaService {
       'Authorization',
       `Bearer ${this.authService.getToken()}`,
     );
-    return this.http.get<Maquina>(`${this.baseUrl}/${id}`, { headers });
+    return this.http.get<Maquina>(`${this.apiUrl}/${id}`, { headers });
   }
 
-  obtenerTodasLasMaquinas(): Observable<Maquina[]> {
+  listarMaquinas(): Observable<Maquina[]> {
     const headers = new HttpHeaders().set(
       'Authorization',
       `Bearer ${this.authService.getToken()}`,
     );
-    return this.http.get<Maquina[]>(this.baseUrl, { headers });
+    return this.http.get<Maquina[]>(this.apiUrl, { headers });
   }
 
   esAdministrador(): boolean {

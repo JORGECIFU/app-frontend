@@ -1,0 +1,280 @@
+<mat-card class="admin-card">
+  <mat-tab-group>
+    <!-- Tab Mi Perfil -->
+    <mat-tab label="Mi Perfil">
+      <div class="tab-content">
+        <mat-card-header>
+          <mat-card-title class="account-title">Mi Perfil</mat-card-title>
+          <mat-card-subtitle
+            >Gestiona tu información personal</mat-card-subtitle
+          >
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="perfilForm">
+            <div class="form-fields">
+              <!-- Nombre -->
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input
+                  matInput
+                  formControlName="nombre"
+                  [readonly]="!modoEdicion"
+                />
+                @if (
+                  perfilForm.get("nombre")?.hasError("required") &&
+                  perfilForm.get("nombre")?.touched
+                ) {
+                  <mat-error>El nombre es requerido</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Apellido -->
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido</mat-label>
+                <input
+                  matInput
+                  formControlName="apellido"
+                  [readonly]="!modoEdicion"
+                />
+                @if (
+                  perfilForm.get("apellido")?.hasError("required") &&
+                  perfilForm.get("apellido")?.touched
+                ) {
+                  <mat-error>El apellido es requerido</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Email -->
+              <mat-form-field appearance="outline">
+                <mat-label>Correo electrónico</mat-label>
+                <input
+                  matInput
+                  formControlName="email"
+                  [readonly]="!modoEdicion"
+                />
+                @if (
+                  perfilForm.get("email")?.hasError("required") &&
+                  perfilForm.get("email")?.touched
+                ) {
+                  <mat-error>El correo electrónico es requerido</mat-error>
+                }
+                @if (
+                  perfilForm.get("email")?.hasError("email") &&
+                  perfilForm.get("email")?.touched
+                ) {
+                  <mat-error>Ingresa un correo electrónico válido</mat-error>
+                }
+              </mat-form-field>
+
+              <!-- Rol (solo lectura) -->
+              @if (usuario?.rol) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Rol</mat-label>
+                  <input matInput [value]="usuario?.rol" readonly />
+                </mat-form-field>
+              }
+            </div>
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions>
+          @if (!modoEdicion) {
+            <button mat-raised-button color="primary" (click)="editar.emit()">
+              <mat-icon>edit</mat-icon>
+              Editar Perfil
+            </button>
+          } @else {
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="guardar.emit()"
+              [disabled]="!perfilForm.valid || perfilForm.pristine"
+            >
+              <mat-icon>save</mat-icon>
+              Guardar Cambios
+            </button>
+            <button mat-button (click)="cancelar.emit()">Cancelar</button>
+          }
+        </mat-card-actions>
+      </div>
+    </mat-tab>
+
+    <!-- Tab Crear Administrador -->
+    <mat-tab label="Crear Administrador">
+      <div class="tab-content">
+        <mat-card-header>
+          <mat-card-title class="account-title"
+            >Crear Nuevo Administrador</mat-card-title
+          >
+          <mat-card-subtitle
+            >Registra un nuevo administrador en el sistema</mat-card-subtitle
+          >
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="adminForm" (ngSubmit)="crearAdmin.emit()">
+            <div class="form-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="nombre" required />
+                @if (
+                  adminForm.get("nombre")?.hasError("required") &&
+                  adminForm.get("nombre")?.touched
+                ) {
+                  <mat-error>El nombre es requerido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="apellido" required />
+                @if (
+                  adminForm.get("apellido")?.hasError("required") &&
+                  adminForm.get("apellido")?.touched
+                ) {
+                  <mat-error>El apellido es requerido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Correo electrónico</mat-label>
+                <input matInput formControlName="email" required type="email" />
+                @if (
+                  adminForm.get("email")?.hasError("required") &&
+                  adminForm.get("email")?.touched
+                ) {
+                  <mat-error>El correo electrónico es requerido</mat-error>
+                }
+                @if (
+                  adminForm.get("email")?.hasError("email") &&
+                  adminForm.get("email")?.touched
+                ) {
+                  <mat-error>Ingresa un correo electrónico válido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Contraseña</mat-label>
+                <input
+                  matInput
+                  formControlName="password"
+                  required
+                  type="password"
+                />
+                @if (
+                  adminForm.get("password")?.hasError("required") &&
+                  adminForm.get("password")?.touched
+                ) {
+                  <mat-error>La contraseña es requerida</mat-error>
+                }
+                @if (
+                  adminForm.get("password")?.hasError("minlength") &&
+                  adminForm.get("password")?.touched
+                ) {
+                  <mat-error
+                    >La contraseña debe tener al menos 8 caracteres</mat-error
+                  >
+                }
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="!adminForm.valid"
+              >
+                <mat-icon>person_add</mat-icon>
+                Crear Administrador
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </div>
+    </mat-tab>
+
+    <!-- Tab Gestión de Usuarios -->
+    <mat-tab label="Gestión de Usuarios">
+      <div class="tab-content">
+        <mat-card-header>
+          <mat-card-title class="account-title"
+            >Usuarios del Sistema</mat-card-title
+          >
+          <mat-card-subtitle
+            >Gestiona los usuarios de la plataforma</mat-card-subtitle
+          >
+        </mat-card-header>
+
+        <mat-card-content>
+          <table mat-table [dataSource]="usuarios" class="mat-elevation-z8">
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let usuario">{{ usuario.id }}</td>
+            </ng-container>
+
+            <!-- Nombre Column -->
+            <ng-container matColumnDef="nombre">
+              <th mat-header-cell *matHeaderCellDef>Nombre</th>
+              <td mat-cell *matCellDef="let usuario">{{ usuario.nombre }}</td>
+            </ng-container>
+
+            <!-- Apellido Column -->
+            <ng-container matColumnDef="apellido">
+              <th mat-header-cell *matHeaderCellDef>Apellido</th>
+              <td mat-cell *matCellDef="let usuario">{{ usuario.apellido }}</td>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let usuario">{{ usuario.email }}</td>
+            </ng-container>
+
+            <!-- Rol Column -->
+            <ng-container matColumnDef="rol">
+              <th mat-header-cell *matHeaderCellDef>Rol</th>
+              <td
+                mat-cell
+                *matCellDef="let usuario"
+                [class]="usuario.rol?.toLowerCase()"
+              >
+                {{ usuario.rol }}
+              </td>
+            </ng-container>
+
+            <!-- Acciones Column -->
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let usuario">
+                @if (usuario.rol === "USUARIO") {
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="promover.emit(usuario)"
+                    title="Promover a Administrador"
+                  >
+                    <mat-icon>admin_panel_settings</mat-icon>
+                  </button>
+                }
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+
+          <mat-paginator
+            [pageSize]="5"
+            [pageSizeOptions]="[5, 10, 25]"
+            showFirstLastButtons
+            aria-label="Seleccionar página de usuarios"
+          >
+          </mat-paginator>
+        </mat-card-content>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

@@ -1,9 +1,0 @@
-@if (store$ | async; as store) {
-  <button mat-raised-button color="warn" (click)="store.decrement()">
-    Decrementar
-  </button>
-  <h2>Contador: {{ store.counter }}</h2>
-  <button mat-raised-button color="primary" (click)="store.increment()">
-    Incrementar
-  </button>
-}

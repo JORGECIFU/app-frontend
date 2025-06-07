@@ -14,7 +14,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { Router } from '@angular/router';
 import { PlanService, Plan } from '../services/plan.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-plan',
@@ -29,9 +32,10 @@ import { PlanService, Plan } from '../services/plan.service';
     MatInputModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatCardModule,
   ],
   templateUrl: './plan.component.html',
-  styleUrl: './plan.component.scss',
+  styleUrls: ['./plan.component.scss'],
 })
 export class PlanComponent implements OnInit {
   planes: Plan[] = [];
@@ -44,6 +48,7 @@ export class PlanComponent implements OnInit {
     private planService: PlanService,
     private fb: FormBuilder,
     private authRolesService: AuthRolesService,
+    private router: Router,
   ) {
     this.esAdmin = this.authRolesService.esAdministrador();
     this.planForm = this.fb.group({
@@ -114,17 +119,62 @@ export class PlanComponent implements OnInit {
   }
 
   eliminarPlan(id: number) {
-    if (confirm('¿Está seguro de eliminar este plan?')) {
-      this.planService.eliminarPlan(id).subscribe({
-        next: () => this.cargarPlanes(),
-        error: (error) => console.error('Error al eliminar plan:', error),
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¡No podrás revertir esta acción!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.planService.eliminarPlan(id).subscribe({
+          next: () => {
+            this.cargarPlanes();
+            Swal.fire(
+              '¡Eliminado!',
+              'El plan ha sido eliminado correctamente.',
+              'success',
+            );
+          },
+          error: (error) => {
+            console.error('Error al eliminar plan:', error);
+            Swal.fire(
+              'Error',
+              'No se pudo eliminar el plan. Por favor, intente nuevamente.',
+              'error',
+            );
+          },
+        });
+      }
+    });
   }
 
   resetForm() {
     this.modoEdicion = false;
     this.planEnEdicion = null;
     this.planForm.reset();
+  }
+
+  irAAlquiler(plan: Plan) {
+    this.router.navigate(['/system/alquiler'], {
+      queryParams: { planId: plan.id },
+    });
+  }
+
+  getImagenPlan(nombrePlan: string): string {
+    const nombreNormalizado = nombrePlan.toLowerCase().trim();
+    if (nombreNormalizado.includes('basic')) {
+      return '/basic_img.webp';
+    } else if (nombreNormalizado.includes('gold')) {
+      return '/gold_img.webp';
+    } else if (nombreNormalizado.includes('premium')) {
+      return '/premium_img.webp';
+    } else if (nombreNormalizado.includes('vip')) {
+      return '/vip_img.webp';
+    }
+    return '/basic_img.webp'; // imagen por defecto
   }
 }

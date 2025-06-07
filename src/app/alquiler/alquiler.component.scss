@@ -1,0 +1,64 @@
+.alquiler-container {
+  padding: 20px;
+
+  .tab-content {
+    padding: 20px 0;
+
+    h2 {
+      color: #1a2b3c;
+      margin-bottom: 20px;
+    }
+  }
+
+  table {
+    width: 100%;
+    background: white;
+    margin-top: 1rem;
+
+    .mat-mdc-header-cell {
+      background-color: #1a2b3c;
+      color: white;
+      font-weight: bold;
+    }
+
+    .mat-mdc-row:hover {
+      background-color: rgba(0, 198, 255, 0.05);
+    }
+  }
+
+  td.activo {
+    color: #4caf50;
+    font-weight: 500;
+  }
+
+  td.cerrado {
+    color: #f44336;
+    font-weight: 500;
+  }
+
+  .no-access {
+    text-align: center;
+    padding: 2rem;
+    color: #f44336;
+    font-size: 1.2rem;
+  }
+
+  .mat-mdc-tab-group {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  button[color="warn"] {
+    color: #f44336;
+  }
+
+  // Hacer las tablas scrolleables horizontalmente en móviles
+  @media (max-width: 1024px) {
+    .mat-mdc-table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}

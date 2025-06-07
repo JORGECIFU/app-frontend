@@ -1,4 +1,9 @@
-import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandlerFn,
+  HttpRequest,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
@@ -10,7 +15,7 @@ const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export function JwtInterceptor(
   request: HttpRequest<unknown>,
-  next: HttpHandlerFn
+  next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -25,7 +30,9 @@ export function JwtInterceptor(
   };
 
   // Lógica de refresh de token ante un 401
-  const handle401Error = (req: HttpRequest<any>): Observable<HttpEvent<any>> => {
+  const handle401Error = (
+    req: HttpRequest<any>,
+  ): Observable<HttpEvent<any>> => {
     if (!isRefreshing) {
       isRefreshing = true;
       refreshTokenSubject.next(null);

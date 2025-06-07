@@ -1,60 +1,184 @@
 .plan-container {
   padding: 20px;
+  min-height: 100%;
+  color: black;
 
   h1 {
-    color: #1a2b3c;
+    text-align: center;
     margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: bolder;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
-}
 
-.plan-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  .button-container {
-    grid-column: 1 / -1;
-    display: flex;
+  // Estilos para el formulario de administrador
+  .plan-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-    justify-content: flex-end;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    button[color="primary"] {
-      background-color: gold;
-      color: #1a2b3c;
+    .button-container {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
 
-      &:hover {
-        background-color: #ffd700;
-      }
+      button[color="primary"] {
+        background-color: gold;
+        color: #1a2b3c;
 
-      &:disabled {
-        background-color: rgba(gold, 0.5);
+        &:hover {
+          background-color: #ffd700;
+        }
+
+        &:disabled {
+          background-color: rgba(gold, 0.5);
+        }
       }
     }
   }
-}
 
-.mat-mdc-table {
-  width: 100%;
-  background: white;
-  margin-top: 1rem;
-
-  .mat-mdc-header-cell {
-    background-color: #1a2b3c;
-    color: white;
-    font-weight: bold;
+  // Grid de tarjetas para usuarios normales
+  .planes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
   }
 
-  .mat-mdc-row:hover {
-    background-color: rgba(0, 198, 255, 0.05);
+  .plan-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+    mat-card-header {
+      color: #1a237e;
+      padding: 16px;
+
+      .card-header-content {
+        text-align: center;
+        width: 100%;
+
+        mat-card-title {
+          font-size: 1.8rem;
+          margin-bottom: 8px;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+
+        mat-card-subtitle {
+          color: #5c6bc0;
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .image-container {
+      padding: 16px;
+      text-align: center;
+
+      img {
+        height: auto;
+        width: 200px;
+        object-fit: contain;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: 16px;
+
+      .plan-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .detail-item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 8px;
+          background: rgba(26, 35, 126, 0.05);
+          border-radius: 8px;
+
+          .detail-icon {
+            color: #1a237e;
+          }
+
+          .detail-text {
+            flex: 1;
+
+            .detail-label {
+              color: #5c6bc0;
+              margin: 0;
+              font-size: 0.9rem;
+            }
+
+            .detail-value {
+              color: #1a237e;
+              margin: 0;
+              font-weight: 500;
+              font-size: 1.1rem;
+            }
+          }
+        }
+      }
+    }
+
+    mat-card-actions {
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+
+      .alquilar-button {
+        width: 80%;
+        padding: 8px 24px;
+        font-size: 1.1rem;
+        background-color: gold !important;
+        color: #1a2b3c !important;
+
+        &:hover {
+          background-color: #ffd700 !important;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        mat-icon {
+          margin-right: 8px;
+          color: #1a2b3c;
+        }
+      }
+    }
   }
 
-  .mat-column-acciones {
-    width: 120px;
-    text-align: center;
+  // Estilos para la tabla de administrador
+  table {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+
+    th {
+      background: #1a237e;
+      color: white;
+      font-weight: 500;
+    }
+
+    td {
+      color: #333;
+    }
   }
 }
