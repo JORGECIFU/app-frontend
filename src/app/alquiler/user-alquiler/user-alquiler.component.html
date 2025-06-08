@@ -1,14 +1,193 @@
 <div class="contenedor-alquiler">
-  <mat-card class="mensaje-construccion">
-    <mat-card-content>
-      <div class="construccion-contenido">
-        <mat-icon class="construccion-icon">construction</mat-icon>
-        <h2>Módulo en Construcción</h2>
+  @if (cargando) {
+    <div class="cargando-contenedor">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando alquileres...</p>
+    </div>
+  } @else if (error) {
+    <mat-card class="mensaje-error">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+      </mat-card-content>
+    </mat-card>
+  } @else if (!alquileresActivos.length && !alquileresCerrados.length) {
+    <mat-card class="sin-alquileres">
+      <mat-card-content>
+        <mat-icon>info</mat-icon>
+        <h2>No tienes alquileres activos</h2>
         <p>
-          Estamos trabajando en las funcionalidades de alquiler para usuarios.
+          Para comenzar, dirígete al apartado de Planes y selecciona el que más
+          te guste.
         </p>
-        <p>¡Pronto estará disponible!</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
+        <p>
+          Recuerda revisar tu saldo disponible en "Mi Perfil" antes de realizar
+          un alquiler.
+        </p>
+        <div class="acciones">
+          <button mat-raised-button color="primary" (click)="irAPlanes()">
+            <mat-icon>list</mat-icon>
+            Ver Planes
+          </button>
+          <button mat-raised-button (click)="irAPerfil()">
+            <mat-icon>account_balance_wallet</mat-icon>
+            Revisar Saldo
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <div class="tabla-contenedor">
+      @if (alquileresActivos.length) {
+        <h2>Alquileres Activos</h2>
+        <table mat-table [dataSource]="alquileresActivos">
+          <ng-container matColumnDef="nombrePlan">
+            <th mat-header-cell *matHeaderCellDef>Plan</th>
+            <td mat-cell *matCellDef="let alquiler">
+              <span class="plan-badge">{{
+                obtenerNombrePlan(alquiler.planId)
+              }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef>Fecha de Inicio</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{ alquiler.fechaInicio | date: "medium" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaFin">
+            <th mat-header-cell *matHeaderCellDef>Fecha de Fin</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{ alquiler.fechaFin | date: "medium" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="precioAlquiler">
+            <th mat-header-cell *matHeaderCellDef>Precio</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{
+                alquiler.precioAlquiler | currency: "USD" : "symbol" : "1.2-2"
+              }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let alquiler">
+              <span class="estado-badge estado-activo">{{
+                alquiler.estado
+              }}</span>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="[
+              'nombrePlan',
+              'fechaInicio',
+              'fechaFin',
+              'precioAlquiler',
+              'estado',
+            ]"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: [
+                'nombrePlan',
+                'fechaInicio',
+                'fechaFin',
+                'precioAlquiler',
+                'estado',
+              ]
+            "
+          ></tr>
+        </table>
+      }
+
+      @if (alquileresCerrados.length) {
+        <h2>Alquileres Finalizados</h2>
+        <table mat-table [dataSource]="alquileresCerrados">
+          <ng-container matColumnDef="nombrePlan">
+            <th mat-header-cell *matHeaderCellDef>Plan</th>
+            <td mat-cell *matCellDef="let alquiler">
+              <span class="plan-badge">{{
+                obtenerNombrePlan(alquiler.planId)
+              }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaInicio">
+            <th mat-header-cell *matHeaderCellDef>Fecha de Inicio</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{ alquiler.fechaInicio | date: "medium" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fechaFin">
+            <th mat-header-cell *matHeaderCellDef>Fecha de Fin</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{ alquiler.fechaFin | date: "medium" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="precioAlquiler">
+            <th mat-header-cell *matHeaderCellDef>Precio</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{
+                alquiler.precioAlquiler | currency: "USD" : "symbol" : "1.2-2"
+              }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="montoDevuelto">
+            <th mat-header-cell *matHeaderCellDef>Monto Devuelto</th>
+            <td mat-cell *matCellDef="let alquiler">
+              {{
+                alquiler.montoDevuelto | currency: "USD" : "symbol" : "1.2-2"
+              }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let alquiler">
+              <span class="estado-badge estado-finalizado">{{
+                alquiler.estado
+              }}</span>
+            </td>
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="[
+              'nombrePlan',
+              'fechaInicio',
+              'fechaFin',
+              'precioAlquiler',
+              'montoDevuelto',
+              'estado',
+            ]"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: [
+                'nombrePlan',
+                'fechaInicio',
+                'fechaFin',
+                'precioAlquiler',
+                'montoDevuelto',
+                'estado',
+              ]
+            "
+          ></tr>
+        </table>
+      }
+    </div>
+  }
 </div>

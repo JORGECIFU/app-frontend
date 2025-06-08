@@ -6,4 +6,8 @@ export interface Plan {
   gananciaMin: number;
   gananciaMax: number;
   duracionDias: number;
+  precioBruto?: number;
+  precioAlquiler?: number;
+  gananciaMaxUsuario?: number;
+  gananciaPromedioDiaria?: number;
 }

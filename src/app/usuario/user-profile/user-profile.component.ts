@@ -18,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Usuario } from '../../models/usuario.model';
-import { CuentaService, Cuenta } from '../../services/cuenta.service';
+import { Cuenta, CuentaService } from '../../services/cuenta.service';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
@@ -38,7 +38,6 @@ import { Router, RouterModule } from '@angular/router';
     MatProgressSpinnerModule,
     RouterModule,
   ],
-  providers: [CuentaService],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
@@ -60,28 +59,30 @@ export class UserProfileComponent implements OnInit, OnChanges {
     private cuentaService: CuentaService,
     private router: Router,
   ) {
-    if (!this.cuentaService) {
-      console.error('CuentaService no está inyectado correctamente');
-    }
-    if (!this.router) {
-      console.error('Router no está inyectado correctamente');
-    }
+    // El constructor se mantiene simple, la inicialización se hace en ngOnInit
   }
 
   ngOnInit(): void {
-    if (this.usuario) {
-      this.cargarCuenta();
-    }
+    // Retrasar la carga inicial para asegurar que las dependencias estén listas
+    setTimeout(() => {
+      if (this.usuario) {
+        this.cargarCuenta();
+      }
+    }, 0);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['usuario'] && changes['usuario'].currentValue) {
-      this.cargarCuenta();
+      // Asegurarnos de que el servicio está listo antes de cargar
+      setTimeout(() => {
+        this.cargarCuenta();
+      }, 0);
     }
   }
 
   cargarCuenta() {
     if (!this.usuario?.id) {
+      this.cargandoCuenta = false;
       return;
     }
 

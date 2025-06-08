@@ -6,7 +6,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { AuthRolesService } from '../services/auth-roles.service';
+import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,11 +15,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
-import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+
 import { Plan } from '../models/plan.model';
 import { PlanService, PlanConPrecios } from '../services/plan.service';
-import { AuthService } from '../services/auth.service';
+import { AlquilerService } from '../services/alquiler.service';
+import { AuthRolesService } from '../services/auth-roles.service';
 
 @Component({
   selector: 'app-plan',
@@ -48,6 +49,7 @@ export class PlanComponent implements OnInit {
 
   constructor(
     private planService: PlanService,
+    private alquilerService: AlquilerService,
     private fb: FormBuilder,
     private authRolesService: AuthRolesService,
     private router: Router,
@@ -212,5 +214,49 @@ export class PlanComponent implements OnInit {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(precio);
+  }
+
+  async crearAlquiler(plan: Plan) {
+    const { value: texto } = await Swal.fire({
+      title: 'Confirmar Alquiler',
+      text: `Se realizará el cargo de ${this.formatearPrecio(plan.precioAlquiler || 0)} a tu cuenta. ¿Estás seguro?`,
+      icon: 'warning',
+      input: 'text',
+      inputLabel: 'Escribe "ALQUILAR" para confirmar',
+      inputPlaceholder: 'ALQUILAR',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar Alquiler',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#dc3545',
+      inputValidator: (value) => {
+        if (!value || value.toUpperCase() !== 'ALQUILAR') {
+          return 'Debes escribir "ALQUILAR" para confirmar';
+        }
+        return null;
+      },
+    });
+
+    if (texto) {
+      this.alquilerService.crearAlquiler(plan.id!).subscribe({
+        next: (alquiler) => {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Tu alquiler ha sido creado correctamente',
+            icon: 'success',
+            confirmButtonColor: '#28a745',
+          }).then(() => {
+            this.router.navigate(['/system/alquiler']);
+          });
+        },
+        error: (error) => {
+          let mensajeError = 'Ocurrió un error al crear el alquiler';
+          if (error.error?.message) {
+            mensajeError = error.error.message;
+          }
+          Swal.fire('Error', mensajeError, 'error');
+        },
+      });
+    }
   }
 }

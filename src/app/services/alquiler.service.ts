@@ -73,4 +73,48 @@ export class AlquilerService {
       headers,
     });
   }
+
+  // Método para obtener los alquileres activos del usuario
+  obtenerAlquileresActivos(usuarioId: number): Observable<Alquiler[]> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.get<Alquiler[]>(
+      `${this.baseUrl}/usuario/${usuarioId}/activas`,
+      { headers },
+    );
+  }
+
+  // Método para obtener los alquileres cerrados del usuario
+  obtenerAlquileresCerrados(usuarioId: number): Observable<Alquiler[]> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.get<Alquiler[]>(
+      `${this.baseUrl}/usuario/${usuarioId}/cerradas`,
+      { headers },
+    );
+  }
+
+  // Método para obtener el usuario actual
+  obtenerUsuarioActual(): Observable<any> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.get(`${environment.HOST_BACKEND}/api/usuarios/me`, {
+      headers,
+    });
+  }
+
+  // Método para crear un nuevo alquiler
+  crearAlquiler(planId: number): Observable<Alquiler> {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.authService.getToken()}`,
+    );
+    return this.http.post<Alquiler>(this.baseUrl, { planId }, { headers });
+  }
 }

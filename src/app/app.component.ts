@@ -17,7 +17,7 @@ import { AuthState } from './auth/auth.state';
 @Component({
   selector: 'app-root',
   imports: [
-    CommonModule, // Añadir CommonModule aquí
+    CommonModule,
     RouterOutlet,
     MatIconModule,
     MatMenuModule,

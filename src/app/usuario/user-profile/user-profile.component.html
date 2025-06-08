@@ -138,7 +138,7 @@
             <h2>Saldo Actual</h2>
             <div class="saldo-display">
               <span class="moneda">USD</span>
-              <span class="cantidad">{{ cuenta?.balance || 0 }}</span>
+              <span class="cantidad">{{ cuenta?.balance?.toFixed(2) }}</span>
             </div>
 
             @if (!cuenta?.balance) {
