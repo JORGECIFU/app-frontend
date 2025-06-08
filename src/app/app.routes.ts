@@ -10,6 +10,8 @@ import { PlanComponent } from './plan/plan.component';
 import { MaquinaComponent } from './maquina/maquina.component';
 import { AlquilerComponent } from './alquiler/alquiler.component';
 import { UsuarioComponent } from './usuario/usuario.component';
+import { MonederoComponent } from './monedero/monedero.component';
+import { MonederoDetalleComponent } from './monedero/monedero-detalle/monedero-detalle.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -25,6 +27,8 @@ export const routes: Routes = [
       { path: 'maquina', component: MaquinaComponent },
       { path: 'alquiler', component: AlquilerComponent },
       { path: 'usuario', component: UsuarioComponent },
+      { path: 'monedero', component: MonederoComponent },
+      { path: 'monedero/:id', component: MonederoDetalleComponent },
       { path: 'pasarela-pagos', component: PasarelaPagosComponent },
       { path: '', redirectTo: 'plan', pathMatch: 'full' },
     ],

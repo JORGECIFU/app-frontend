@@ -15,7 +15,6 @@ import { CommonModule } from '@angular/common';
 import { MatStepper } from '@angular/material/stepper';
 import { CuentaService } from '../services/cuenta.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { TabService } from '../services/tab.service';
 
 @Component({
   selector: 'app-pasarela-pagos',
@@ -43,7 +42,6 @@ export class PasarelaPagosComponent implements OnInit {
     private router: Router,
     private cuentaService: CuentaService,
     private snackBar: MatSnackBar,
-    private tabService: TabService,
   ) {}
 
   ngOnInit() {
@@ -142,8 +140,6 @@ export class PasarelaPagosComponent implements OnInit {
   }
 
   volverAMiSaldo() {
-    // Establecer el índice para mostrar la pestaña de "Mi Saldo"
-    this.tabService.setSelectedTabIndex(1); // El índice 1 corresponde a la pestaña "Mi Saldo"
     this.router.navigate(['/system/usuario']);
   }
 }

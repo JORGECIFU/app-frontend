@@ -19,6 +19,13 @@ export interface Cuenta {
 }
 
 export interface Transaccion {
+  fechaTransaccion: string;
+  tipo: string;
+  monto: number;
+  balancePosterior: number;
+}
+
+export interface CrearTransaccionRequest {
   tipo: 'RECARGA_PLATAFORMA';
   monto: number;
 }
@@ -49,7 +56,7 @@ export class CuentaService {
     );
   }
 
-  realizarTransaccion(transaccion: Transaccion): Observable<any> {
+  realizarTransaccion(transaccion: CrearTransaccionRequest): Observable<any> {
     const token = this.authService.getToken();
     if (!token) {
       return throwError(() => new Error('No hay token de autenticación'));

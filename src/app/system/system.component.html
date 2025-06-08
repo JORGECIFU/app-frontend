@@ -30,6 +30,13 @@
           <span matListItemTitle *ngIf="isExpanded">Planes</span>
         </a>
 
+        @if (rol === "USUARIO") {
+          <a mat-list-item routerLink="monedero" routerLinkActive="active">
+            <mat-icon matListItemIcon>account_balance_wallet</mat-icon>
+            <span matListItemTitle *ngIf="isExpanded">Mis Monederos</span>
+          </a>
+        }
+
         @if (rol === "ADMINISTRADOR") {
           <a mat-list-item routerLink="maquina" routerLinkActive="active">
             <mat-icon matListItemIcon>precision_manufacturing</mat-icon>

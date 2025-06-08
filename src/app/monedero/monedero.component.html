@@ -1,0 +1,129 @@
+<div class="monederos-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Mis Monederos</h1>
+    <p class="subtitle">Gestiona tus carteras de criptomonedas</p>
+
+    <!-- Balance de la plataforma -->
+    @if (cuenta) {
+      <div class="balance-plataforma">
+        <mat-card class="balance-card">
+          <mat-card-content>
+            <div class="balance-info">
+              <mat-icon>account_balance</mat-icon>
+              <div class="balance-text">
+                <span class="label">Saldo en Plataforma</span>
+                <span class="amount"
+                  >${{ cuenta.balance.toFixed(2) || "0.00" }} USD</span
+                >
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  </div>
+
+  <!-- Estados de carga y error -->
+  @if (cargando) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando monederos...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-card class="error-card">
+        <mat-card-content>
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ error }}</p>
+          <button mat-raised-button color="primary" (click)="cargarDatos()">
+            <mat-icon>refresh</mat-icon>
+            Reintentar
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  } @else {
+    <!-- Botón para crear monedero -->
+    <div class="actions-section">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="abrirDialogoCrearMonedero()"
+        class="crear-monedero-btn"
+      >
+        <mat-icon>add_circle</mat-icon>
+        Crear Nuevo Monedero
+      </button>
+    </div>
+
+    <!-- Lista de monederos -->
+    @if (monederos.length === 0) {
+      <div class="empty-state">
+        <mat-card class="empty-card">
+          <mat-card-content>
+            <mat-icon>account_balance_wallet</mat-icon>
+            <h2>No tienes monederos</h2>
+            <p>
+              Crea tu primer monedero para comenzar a gestionar tus
+              criptomonedas
+            </p>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="abrirDialogoCrearMonedero()"
+            >
+              <mat-icon>add</mat-icon>
+              Crear Primer Monedero
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    } @else {
+      <div class="monederos-grid">
+        @for (monedero of monederos; track monedero.monederoId) {
+          <mat-card
+            class="monedero-card"
+            (click)="verDetalleMonedero(monedero)"
+          >
+            <mat-card-content>
+              <div class="monedero-header">
+                <div
+                  class="cripto-info"
+                  [style.color]="getCriptoInfo(monedero.moneda).color"
+                >
+                  <span class="cripto-icono">{{
+                    getCriptoInfo(monedero.moneda).icono
+                  }}</span>
+                  <div class="cripto-details">
+                    <span class="cripto-nombre">{{
+                      getCriptoInfo(monedero.moneda).nombre
+                    }}</span>
+                    <span class="cripto-codigo">{{ monedero.moneda }}</span>
+                  </div>
+                </div>
+                <mat-icon class="more-icon">more_vert</mat-icon>
+              </div>
+
+              <div class="monedero-body">
+                <h3 class="alias">{{ monedero.alias }}</h3>
+                <div class="saldo">
+                  <span class="saldo-label">Saldo Actual</span>
+                  <span class="saldo-amount"
+                    >{{ monedero.saldoActual.toFixed(6) || "0.000000" }}
+                    {{ monedero.moneda }}</span
+                  >
+                </div>
+              </div>
+
+              <div class="monedero-footer">
+                <span class="id-monedero">ID: {{ monedero.monederoId }}</span>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,265 @@
+.monederos-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    color: #333;
+    font-size: 2.5rem;
+    font-weight: 300;
+  }
+
+  .subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+}
+
+.balance-plataforma {
+  margin-bottom: 1.5rem;
+
+  .balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+
+    .balance-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .balance-text {
+        display: flex;
+        flex-direction: column;
+
+        .label {
+          font-size: 0.9rem;
+          opacity: 0.9;
+        }
+
+        .amount {
+          font-size: 1.5rem;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 1rem;
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+}
+
+.error-card {
+  text-align: center;
+  padding: 2rem;
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.actions-section {
+  margin-bottom: 2rem;
+
+  .crear-monedero-btn {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+
+  .empty-card {
+    text-align: center;
+    padding: 3rem;
+    max-width: 400px;
+
+    mat-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      color: #ddd;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin: 1rem 0;
+      color: #333;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.monederos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.monedero-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #e9ecef;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  mat-card-content {
+    padding: 1.5rem;
+  }
+
+  .monedero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .cripto-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .cripto-icono {
+        font-size: 2rem;
+        font-weight: bold;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        backdrop-filter: blur(10px);
+      }
+
+      .cripto-details {
+        display: flex;
+        flex-direction: column;
+
+        .cripto-nombre {
+          font-weight: 500;
+          font-size: 1.1rem;
+        }
+
+        .cripto-codigo {
+          font-size: 0.9rem;
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .more-icon {
+      color: #999;
+    }
+  }
+
+  .monedero-body {
+    margin: 1.5rem 0;
+
+    .alias {
+      margin: 0 0 1rem 0;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #333;
+    }
+
+    .saldo {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .saldo-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .saldo-amount {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: #333;
+        font-family: "Courier New", monospace;
+      }
+    }
+  }
+
+  .monedero-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+
+    .id-monedero {
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .arrow-icon {
+      color: #666;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .monederos-container {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .monederos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monedero-card {
+    mat-card-content {
+      padding: 1rem;
+    }
+  }
+}

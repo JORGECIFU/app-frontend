@@ -1,0 +1,223 @@
+.monedero-detalle-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+}
+
+.error-card {
+  text-align: center;
+  padding: 2rem;
+  max-width: 400px;
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    margin: 1rem 0;
+    color: #333;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+
+  .back-button {
+    background: #f5f5f5;
+
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+
+  .header-content {
+    flex: 1;
+
+    h1 {
+      margin: 0;
+      color: #333;
+      font-size: 2rem;
+      font-weight: 400;
+    }
+
+    .monedero-info {
+      margin-top: 0.5rem;
+
+      .cripto-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+
+        .cripto-icono {
+          font-size: 1.5rem;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.balances-section {
+  margin-bottom: 2rem;
+
+  .balances-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .balance-card {
+    .balance-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+      font-weight: 500;
+
+      mat-icon {
+        font-size: 1.2rem;
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+    }
+
+    .balance-amount {
+      font-size: 1.8rem;
+      font-weight: 500;
+      font-family: "Courier New", monospace;
+    }
+
+    &.monedero-balance {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+
+      .balance-header {
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    &.plataforma-balance {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #333;
+
+      .balance-header {
+        color: #666;
+      }
+    }
+  }
+}
+
+.transacciones-section {
+  .tab-content {
+    padding-top: 1.5rem;
+  }
+
+  .transaction-card {
+    mat-card-header {
+      margin-bottom: 1rem;
+
+      mat-card-title {
+        font-size: 1.3rem;
+        color: #333;
+      }
+
+      mat-card-subtitle {
+        color: #666;
+        margin-top: 0.5rem;
+      }
+    }
+
+    .full-width {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+
+      button {
+        min-width: 200px;
+        padding: 0.75rem 1.5rem;
+
+        mat-spinner {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+// Tabs styling
+::ng-deep .mat-mdc-tab-group {
+  .mat-mdc-tab-label {
+    min-width: auto !important;
+    padding: 0 1.5rem !important;
+
+    .mat-mdc-tab-label-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .monedero-detalle-container {
+    padding: 1rem;
+  }
+
+  .header {
+    .header-content h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .balances-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transaction-card {
+    .form-actions {
+      justify-content: stretch;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

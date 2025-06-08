@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>Crear Nuevo Monedero</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="monederoForm" (ngSubmit)="onSubmit()">
+    <div class="form-container">
+      <!-- Alias del monedero -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Alias del monedero</mat-label>
+        <input
+          matInput
+          formControlName="alias"
+          placeholder="Ej: Mi monedero Bitcoin"
+          maxlength="50"
+        />
+        <mat-icon matSuffix>account_balance_wallet</mat-icon>
+        @if (
+          monederoForm.get("alias")?.hasError("required") &&
+          monederoForm.get("alias")?.touched
+        ) {
+          <mat-error>El alias es requerido</mat-error>
+        }
+        @if (
+          monederoForm.get("alias")?.hasError("minlength") &&
+          monederoForm.get("alias")?.touched
+        ) {
+          <mat-error>El alias debe tener al menos 3 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Selección de criptomoneda -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Criptomoneda</mat-label>
+        <mat-select formControlName="moneda">
+          @for (cripto of criptomonedas; track cripto.codigo) {
+            <mat-option [value]="cripto.codigo">
+              <span class="cripto-option">
+                <span class="cripto-icono">{{ cripto.icono }}</span>
+                <span class="cripto-nombre"
+                  >{{ cripto.nombre }} ({{ cripto.codigo }})</span
+                >
+              </span>
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>currency_bitcoin</mat-icon>
+        @if (
+          monederoForm.get("moneda")?.hasError("required") &&
+          monederoForm.get("moneda")?.touched
+        ) {
+          <mat-error>Selecciona una criptomoneda</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="!monederoForm.valid"
+    (click)="onSubmit()"
+  >
+    <mat-icon>add</mat-icon>
+    Crear Monedero
+  </button>
+</mat-dialog-actions>

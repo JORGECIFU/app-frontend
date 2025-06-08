@@ -1,0 +1,257 @@
+<div class="monedero-detalle-container">
+  @if (cargando) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando información del monedero...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-card class="error-card">
+        <mat-card-content>
+          <mat-icon color="warn">error</mat-icon>
+          <h2>{{ error }}</h2>
+          <div class="error-actions">
+            <button mat-raised-button color="primary" (click)="cargarDatos()">
+              <mat-icon>refresh</mat-icon>
+              Reintentar
+            </button>
+            <button mat-button (click)="volver()">
+              <mat-icon>arrow_back</mat-icon>
+              Volver
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  } @else if (monedero) {
+    <!-- Header del monedero -->
+    <div class="header">
+      <button mat-icon-button (click)="volver()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-content">
+        <h1>{{ monedero.alias }}</h1>
+        <div class="monedero-info">
+          <span
+            class="cripto-info"
+            [style.color]="getCriptoInfo(monedero.moneda).color"
+          >
+            <span class="cripto-icono">{{
+              getCriptoInfo(monedero.moneda).icono
+            }}</span>
+            {{ getCriptoInfo(monedero.moneda).nombre }} ({{ monedero.moneda }})
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balances -->
+    <div class="balances-section">
+      <div class="balances-grid">
+        <!-- Balance del monedero -->
+        <mat-card class="balance-card monedero-balance">
+          <mat-card-content>
+            <div class="balance-header">
+              <mat-icon>account_balance_wallet</mat-icon>
+              <span>Saldo del Monedero</span>
+            </div>
+            <div class="balance-amount">
+              {{ monedero.saldoActual.toFixed(6) || "0.000000" }}
+              {{ monedero.moneda }}
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Balance de la plataforma -->
+        @if (cuenta) {
+          <mat-card class="balance-card plataforma-balance">
+            <mat-card-content>
+              <div class="balance-header">
+                <mat-icon>account_balance</mat-icon>
+                <span>Saldo en Plataforma</span>
+              </div>
+              <div class="balance-amount">
+                ${{ cuenta.balance.toFixed(2) || "0.00" }} USD
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </div>
+
+    <!-- Transacciones -->
+    <div class="transacciones-section">
+      <mat-tab-group>
+        <!-- Tab: Recargar desde plataforma -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>download</mat-icon>
+            Recargar desde Plataforma
+          </ng-template>
+
+          <div class="tab-content">
+            <mat-card class="transaction-card">
+              <mat-card-header>
+                <mat-card-title
+                  >Transferir USD → {{ monedero.moneda }}</mat-card-title
+                >
+                <mat-card-subtitle>
+                  Transfiere dinero desde tu cuenta de plataforma a este
+                  monedero
+                </mat-card-subtitle>
+              </mat-card-header>
+
+              <mat-card-content>
+                <form
+                  [formGroup]="formRecargaDesdeP"
+                  (ngSubmit)="recargarDesdeP()"
+                >
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Cantidad en USD</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="usdAmount"
+                      placeholder="0.00"
+                      min="1"
+                      max="10000"
+                      step="0.01"
+                    />
+                    <span matTextPrefix>$</span>
+                    <span matTextSuffix>USD</span>
+
+                    @if (
+                      formRecargaDesdeP
+                        .get("usdAmount")
+                        ?.hasError("required") &&
+                      formRecargaDesdeP.get("usdAmount")?.touched
+                    ) {
+                      <mat-error>La cantidad es requerida</mat-error>
+                    }
+                    @if (
+                      formRecargaDesdeP.get("usdAmount")?.hasError("min") &&
+                      formRecargaDesdeP.get("usdAmount")?.touched
+                    ) {
+                      <mat-error>La cantidad mínima es $1 USD</mat-error>
+                    }
+                    @if (
+                      formRecargaDesdeP.get("usdAmount")?.hasError("max") &&
+                      formRecargaDesdeP.get("usdAmount")?.touched
+                    ) {
+                      <mat-error>La cantidad máxima es $10,000 USD</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <div class="form-actions">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      type="submit"
+                      [disabled]="!formRecargaDesdeP.valid || procesandoRecarga"
+                    >
+                      @if (procesandoRecarga) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                      } @else {
+                        <mat-icon>download</mat-icon>
+                      }
+                      {{
+                        procesandoRecarga
+                          ? "Procesando..."
+                          : "Transferir a Monedero"
+                      }}
+                    </button>
+                  </div>
+                </form>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- Tab: Enviar a plataforma -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>upload</mat-icon>
+            Enviar a Plataforma
+          </ng-template>
+
+          <div class="tab-content">
+            <mat-card class="transaction-card">
+              <mat-card-header>
+                <mat-card-title
+                  >Transferir {{ monedero.moneda }} → USD</mat-card-title
+                >
+                <mat-card-subtitle>
+                  Transfiere criptomonedas desde este monedero a tu cuenta de
+                  plataforma
+                </mat-card-subtitle>
+              </mat-card-header>
+
+              <mat-card-content>
+                <form [formGroup]="formPasoAP" (ngSubmit)="pasarAP()">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Cantidad en {{ monedero.moneda }}</mat-label>
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="cryptoAmount"
+                      placeholder="0.000000"
+                      min="0.000001"
+                      max="1000"
+                      step="0.000001"
+                    />
+                    <span matTextSuffix>{{ monedero.moneda }}</span>
+
+                    @if (
+                      formPasoAP.get("cryptoAmount")?.hasError("required") &&
+                      formPasoAP.get("cryptoAmount")?.touched
+                    ) {
+                      <mat-error>La cantidad es requerida</mat-error>
+                    }
+                    @if (
+                      formPasoAP.get("cryptoAmount")?.hasError("min") &&
+                      formPasoAP.get("cryptoAmount")?.touched
+                    ) {
+                      <mat-error
+                        >La cantidad mínima es 0.000001
+                        {{ monedero.moneda }}</mat-error
+                      >
+                    }
+                    @if (
+                      formPasoAP.get("cryptoAmount")?.hasError("max") &&
+                      formPasoAP.get("cryptoAmount")?.touched
+                    ) {
+                      <mat-error
+                        >La cantidad máxima es 1,000
+                        {{ monedero.moneda }}</mat-error
+                      >
+                    }
+                  </mat-form-field>
+
+                  <div class="form-actions">
+                    <button
+                      mat-raised-button
+                      color="accent"
+                      type="submit"
+                      [disabled]="!formPasoAP.valid || procesandoPaso"
+                    >
+                      @if (procesandoPaso) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                      } @else {
+                        <mat-icon>upload</mat-icon>
+                      }
+                      {{
+                        procesandoPaso
+                          ? "Procesando..."
+                          : "Transferir a Plataforma"
+                      }}
+                    </button>
+                  </div>
+                </form>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  }
+</div>
