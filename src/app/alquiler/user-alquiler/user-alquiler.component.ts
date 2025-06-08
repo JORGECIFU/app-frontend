@@ -11,6 +11,7 @@ import { AlquilerService } from '../../services/alquiler.service';
 import { PlanService } from '../../services/plan.service';
 import { Alquiler } from '../../models/alquiler.model';
 import { Plan } from '../../models/plan.model';
+import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
 
 @Component({
   selector: 'app-user-alquiler',
@@ -22,6 +23,7 @@ import { Plan } from '../../models/plan.model';
     MatButtonModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    FechaLocalPipe,
   ],
   templateUrl: './user-alquiler.component.html',
   styleUrls: ['./user-alquiler.component.scss'],

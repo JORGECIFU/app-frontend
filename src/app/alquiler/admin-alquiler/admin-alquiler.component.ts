@@ -7,8 +7,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import Swal from 'sweetalert2';
 import { Alquiler, PreviewPlan } from '../../models/alquiler.model';
 import { AlquilerService } from '../../services/alquiler.service';
+import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
 
 @Component({
   selector: 'app-admin-alquiler',
@@ -21,6 +23,7 @@ import { AlquilerService } from '../../services/alquiler.service';
     MatTabsModule,
     MatCardModule,
     MatTooltipModule,
+    FechaLocalPipe,
   ],
   templateUrl: './admin-alquiler.component.html',
   styleUrls: ['./admin-alquiler.component.scss'],
@@ -65,34 +68,32 @@ export class AdminAlquilerComponent {
   @Output() alquileresActualizados = new EventEmitter<void>();
 
   cerrarAlquiler(id: number): void {
-    if (confirm('¿Está seguro de cerrar este alquiler?')) {
-      this.alquilerService.cerrarAlquiler(id).subscribe({
-        next: () => {
-          this.mostrarExito('Alquiler cerrado correctamente');
-          this.alquileresActualizados.emit();
-        },
-        error: (error) => {
-          this.mostrarError('Error al cerrar el alquiler');
-        },
-      });
-    }
-  }
-
-  private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['success-snackbar'],
-    });
-  }
-
-  private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['error-snackbar'],
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: '¿Desea cerrar este alquiler?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cerrar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.alquilerService.cerrarAlquiler(id).subscribe({
+          next: () => {
+            Swal.fire(
+              '¡Cerrado!',
+              'El alquiler ha sido cerrado correctamente.',
+              'success',
+            );
+            // Emitir el evento para actualizar la lista
+            this.alquileresActualizados.emit();
+          },
+          error: (error) => {
+            Swal.fire('Error', 'No se pudo cerrar el alquiler', 'error');
+          },
+        });
+      }
     });
   }
 }

@@ -36,7 +36,7 @@
         <ng-container matColumnDef="fechaInicio">
           <th mat-header-cell *matHeaderCellDef>Fecha Inicio</th>
           <td mat-cell *matCellDef="let alquiler">
-            {{ alquiler.fechaInicio | date: "short" }}
+            {{ alquiler.fechaInicio | fechaLocal }}
           </td>
         </ng-container>
 
@@ -44,7 +44,7 @@
         <ng-container matColumnDef="fechaFin">
           <th mat-header-cell *matHeaderCellDef>Fecha Fin</th>
           <td mat-cell *matCellDef="let alquiler">
-            {{ alquiler.fechaFin | date: "short" }}
+            {{ alquiler.fechaFin | fechaLocal }}
           </td>
         </ng-container>
 
@@ -67,12 +67,8 @@
         <!-- Estado Column -->
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td
-            mat-cell
-            *matCellDef="let alquiler"
-            [class]="alquiler.estado.toLowerCase()"
-          >
-            {{ alquiler.estado }}
+          <td mat-cell *matCellDef="let alquiler" [class]="alquiler.estado">
+            <span>{{ alquiler.estado }}</span>
           </td>
         </ng-container>
 

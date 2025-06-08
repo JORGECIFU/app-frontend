@@ -63,7 +63,7 @@ export class UsuarioService {
       `Bearer ${this.authService.getToken()}`,
     );
     return this.http.post<Usuario>(
-      this.apiUrl,
+      `${this.apiUrl}/admin`,
       { ...admin, rol: 'ADMINISTRADOR' },
       { headers },
     );

@@ -250,11 +250,27 @@ export class PlanComponent implements OnInit {
           });
         },
         error: (error) => {
-          let mensajeError = 'Ocurrió un error al crear el alquiler';
-          if (error.error?.message) {
-            mensajeError = error.error.message;
+          if (error.error?.error === 'Fondos insuficientes') {
+            Swal.fire({
+              title: 'Fondos insuficientes',
+              text: 'No tienes suficiente saldo para alquilar este plan',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Recargar Mi Saldo',
+              cancelButtonText: 'Cancelar',
+              confirmButtonColor: '#ffd700',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/system/usuario']);
+              }
+            });
+          } else {
+            let mensajeError = 'Ocurrió un error al crear el alquiler';
+            if (error.error?.message) {
+              mensajeError = error.error.message;
+            }
+            Swal.fire('Error', mensajeError, 'error');
           }
-          Swal.fire('Error', mensajeError, 'error');
         },
       });
     }

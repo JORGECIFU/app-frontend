@@ -92,7 +92,7 @@ export class PasarelaPagosComponent implements OnInit {
 
       this.cuentaService
         .realizarTransaccion({
-          tipo: 'RECARGA_PLATAFORMA' as const,
+          tipo: 'RECARGA_PLATAFORMA',
           monto: Number(monto.toFixed(2)), // Aseguramos 2 decimales y tipo number
         })
         .subscribe({

@@ -84,4 +84,17 @@ export class CuentaService {
       headers,
     });
   }
+
+  obtenerTransacciones(usuarioId: number): Observable<Transaccion[]> {
+    const token = this.authService.getToken();
+    if (!token) {
+      return throwError(() => new Error('No hay token de autenticación'));
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<Transaccion[]>(
+      `${this.baseUrl}/plataforma/cuenta/${usuarioId}/transacciones`,
+      { headers },
+    );
+  }
 }

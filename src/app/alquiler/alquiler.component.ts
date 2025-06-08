@@ -17,6 +17,7 @@ import { Alquiler, PreviewPlan } from '../models/alquiler.model';
       <app-admin-alquiler
         [alquileres]="alquileres"
         [previewsPlanes]="previewsPlanes"
+        (alquileresActualizados)="actualizarDatos()"
       >
       </app-admin-alquiler>
     } @else {
@@ -44,6 +45,12 @@ export class AlquilerComponent implements OnInit {
       this.cargarDatosAdmin();
     } else {
       this.procesarQueryParams();
+    }
+  }
+
+  actualizarDatos(): void {
+    if (this.esAdmin) {
+      this.cargarDatosAdmin();
     }
   }
 
