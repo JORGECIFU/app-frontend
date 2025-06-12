@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 
 import { Plan } from '../models/plan.model';
 import { PlanService } from '../services/plan.service';
+import { DurationLabelPipe } from "../pipes/duration-label.pipe";
 
 @Component({
   selector: 'app-home',
@@ -26,7 +27,8 @@ import { PlanService } from '../services/plan.service';
     MatCardModule,
     MatDividerModule,
     MatMenuModule,
-  ],
+    DurationLabelPipe
+],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })

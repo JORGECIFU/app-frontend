@@ -21,6 +21,7 @@ import { Plan } from '../models/plan.model';
 import { PlanService, PlanConPrecios } from '../services/plan.service';
 import { AlquilerService } from '../services/alquiler.service';
 import { AuthRolesService } from '../services/auth-roles.service';
+import { DurationLabelPipe } from "../pipes/duration-label.pipe";
 
 @Component({
   selector: 'app-plan',
@@ -36,7 +37,8 @@ import { AuthRolesService } from '../services/auth-roles.service';
     MatDialogModule,
     MatSnackBarModule,
     MatCardModule,
-  ],
+    DurationLabelPipe
+],
   templateUrl: './plan.component.html',
   styleUrls: ['./plan.component.scss'],
 })
@@ -199,12 +201,6 @@ export class PlanComponent implements OnInit {
       return '/vip_img.webp';
     }
     return '/basic_img.webp'; // imagen por defecto
-  }
-
-  formatearDuracion(duracionDias: number): string {
-    return duracionDias === 30.4369
-      ? '1 Mes'
-      : `${Math.round(duracionDias)} días`;
   }
 
   formatearPrecio(precio: number): string {

@@ -134,11 +134,7 @@
         <ng-container matColumnDef="duracionDias">
           <th mat-header-cell *matHeaderCellDef>Duración</th>
           <td mat-cell *matCellDef="let preview">
-            {{
-              preview.duracionDias === 30.4369
-                ? "1 mes"
-                : preview.duracionDias + " días"
-            }}
+            {{ preview.duracionDias | durationLabel }}
           </td>
         </ng-container>
 

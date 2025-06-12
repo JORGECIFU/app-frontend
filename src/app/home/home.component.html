@@ -65,12 +65,8 @@
                   <b>{{ formatearPrecio(plan.gananciaMax) }}</b>
                 </p>
                 <p>
-                  Duración:
-                  {{
-                    plan.duracionDias === 30.4369
-                      ? "1 mes"
-                      : (plan.duracionDias | number: "1.0-0") + " días"
-                  }}
+                  <strong>Duración:</strong>
+                  {{ plan.duracionDias | durationLabel }}
                 </p>
               </mat-card-content>
               <mat-card-actions>

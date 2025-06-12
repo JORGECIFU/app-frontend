@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { Alquiler, PreviewPlan } from '../../models/alquiler.model';
 import { AlquilerService } from '../../services/alquiler.service';
 import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
+import { DurationLabelPipe } from "../../pipes/duration-label.pipe";
 
 @Component({
   selector: 'app-admin-alquiler',
@@ -24,7 +25,8 @@ import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
     MatCardModule,
     MatTooltipModule,
     FechaLocalPipe,
-  ],
+    DurationLabelPipe
+],
   templateUrl: './admin-alquiler.component.html',
   styleUrls: ['./admin-alquiler.component.scss'],
 })
