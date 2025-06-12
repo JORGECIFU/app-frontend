@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
 import { Plan } from '../models/plan.model';
-import { environment } from '../../enviroments/enviroment';
+import { environment } from '../../environments/enviroment';
 import { AuthService } from './auth.service';
 
 interface PlanPreview {

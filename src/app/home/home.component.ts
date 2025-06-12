@@ -39,6 +39,15 @@ export class HomeComponent implements OnInit {
     this.planes$ = this.planService.getPlanes();
   }
 
+  formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(precio);
+  }
+
   // trackBy para *ngFor
   trackById(index: number, plan: Plan): number {
     return plan.id;

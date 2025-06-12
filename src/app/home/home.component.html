@@ -52,17 +52,17 @@
             >
               <mat-card-header>
                 <mat-card-title class="card-title">
-                  Plan {{ plan.nombre }}
+                  Plan {{ plan.nombre | titlecase }}
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
                 <p>
                   Ganancia mínima:
-                  <b>${{ plan.gananciaMin.toFixed(2) }} USD/día</b>
+                  <b>{{ formatearPrecio(plan.gananciaMin) }}</b>
                 </p>
                 <p>
                   Ganancia máxima:
-                  <b>${{ plan.gananciaMax.toFixed(2) }} USD/día</b>
+                  <b>{{ formatearPrecio(plan.gananciaMax) }}</b>
                 </p>
                 <p>
                   Duración:

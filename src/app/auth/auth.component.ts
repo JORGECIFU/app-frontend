@@ -26,6 +26,7 @@ import { Router } from '@angular/router';
   styleUrl: './auth.component.scss',
 })
 export class AuthComponent {
+
   private authService = inject(AuthService);
   private router = inject(Router);
 
