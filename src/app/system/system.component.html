@@ -12,6 +12,40 @@
           </button>
         </div>
 
+        <!-- Sección de bienvenida -->
+        @if (isExpanded) {
+          <div class="welcome-section">
+            @if (cargandoUsuario) {
+              <div class="loading">
+                <mat-icon>refresh</mat-icon>
+                <span>Cargando...</span>
+              </div>
+            } @else if (usuario) {
+              <div class="user-info">
+                <div class="welcome-text">
+                  <mat-icon>person</mat-icon>
+                  <span>¡Bienvenid&#64;!</span>
+                </div>
+                <div class="user-name">
+                  {{ usuario.nombre }} {{ usuario.apellido }}
+                </div>
+
+                @if (rol === "USUARIO" && !cargandoCuenta && cuenta) {
+                  <div class="balance-info">
+                    <mat-icon>account_balance_wallet</mat-icon>
+                    <span>Saldo: {{ cuenta.balance | precio }}</span>
+                  </div>
+                } @else if (rol === "USUARIO" && cargandoCuenta) {
+                  <div class="balance-loading">
+                    <mat-icon>refresh</mat-icon>
+                    <span>Cargando saldo...</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
         <!-- Enlaces del menú -->
         @if (rol === "ADMINISTRADOR") {
           <a mat-list-item routerLink="usuario" routerLinkActive="active">

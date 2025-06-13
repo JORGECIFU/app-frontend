@@ -10,8 +10,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RegistroService } from '../services/registro.service';
 
 @Component({
@@ -25,6 +26,8 @@ import { RegistroService } from '../services/registro.service';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
+    MatDividerModule,
+    RouterModule,
   ],
   templateUrl: './registrar-usuario.component.html',
   styleUrl: './registrar-usuario.component.scss',

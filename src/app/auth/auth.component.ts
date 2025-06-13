@@ -8,7 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
+import { MatDividerModule } from '@angular/material/divider';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -21,12 +22,13 @@ import { Router } from '@angular/router';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatDividerModule,
+    RouterModule,
   ],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',
 })
 export class AuthComponent {
-
   private authService = inject(AuthService);
   private router = inject(Router);
 

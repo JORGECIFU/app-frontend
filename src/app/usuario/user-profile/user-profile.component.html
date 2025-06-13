@@ -138,7 +138,13 @@
             <h2>Saldo Actual</h2>
             <div class="saldo-display">
               <span class="moneda">USD</span>
-              <span class="cantidad">{{ cuenta?.balance?.toFixed(2) }}</span>
+              <span class="cantidad">{{ cuenta?.balance | precio }}</span>
+            </div>
+            <div class="saldo-display">
+              <span class="moneda">COP</span>
+              <span class="cantidad">{{
+                cuenta?.balance | precioCop | async
+              }}</span>
             </div>
 
             @if (!cuenta?.balance) {
@@ -223,7 +229,7 @@
 
             <!-- Monto -->
             <ng-container matColumnDef="monto">
-              <th mat-header-cell *matHeaderCellDef>Monto</th>
+              <th mat-header-cell *matHeaderCellDef>Monto (USD)</th>
               <td mat-cell *matCellDef="let transaccion">
                 $ {{ transaccion.monto.toFixed(2) }}
               </td>
@@ -231,7 +237,7 @@
 
             <!-- Balance Posterior -->
             <ng-container matColumnDef="balancePosterior">
-              <th mat-header-cell *matHeaderCellDef>Balance Final</th>
+              <th mat-header-cell *matHeaderCellDef>Balance Final (USD)</th>
               <td mat-cell *matCellDef="let transaccion">
                 $ {{ transaccion.balancePosterior.toFixed(2) }}
               </td>

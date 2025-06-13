@@ -56,6 +56,10 @@ export class AppComponent {
     this.router.navigate(['/home']);
   }
 
+  goToHome() {
+    this.router.navigate(['/home']);
+  }
+
   navigateTo(route: string) {
     this.router.navigate([route]);
   }

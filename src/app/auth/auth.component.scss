@@ -95,6 +95,38 @@ form {
   }
 }
 
+.divider {
+  margin: 2rem 0 1.5rem 0;
+}
+
+.register-section {
+  text-align: center;
+  margin-top: 1rem;
+
+  .register-text {
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .register-button {
+    min-width: 150px;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    border-color: #00c6ff;
+    color: #00c6ff;
+
+    &:hover {
+      background-color: rgba(0, 198, 255, 0.05);
+      border-color: #00c6ff;
+    }
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 480px) {
   .login-card {

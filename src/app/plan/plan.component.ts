@@ -21,7 +21,8 @@ import { Plan } from '../models/plan.model';
 import { PlanService, PlanConPrecios } from '../services/plan.service';
 import { AlquilerService } from '../services/alquiler.service';
 import { AuthRolesService } from '../services/auth-roles.service';
-import { DurationLabelPipe } from "../pipes/duration-label.pipe";
+import { DurationLabelPipe } from '../pipes/duration-label.pipe';
+import { PrecioPipe } from '../pipes/precio.pipe';
 
 @Component({
   selector: 'app-plan',
@@ -37,8 +38,9 @@ import { DurationLabelPipe } from "../pipes/duration-label.pipe";
     MatDialogModule,
     MatSnackBarModule,
     MatCardModule,
-    DurationLabelPipe
-],
+    DurationLabelPipe,
+    PrecioPipe,
+  ],
   templateUrl: './plan.component.html',
   styleUrls: ['./plan.component.scss'],
 })

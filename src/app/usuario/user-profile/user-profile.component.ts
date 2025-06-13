@@ -26,6 +26,8 @@ import {
 } from '../../services/cuenta.service';
 import { Router, RouterModule } from '@angular/router';
 import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
+import { PrecioPipe } from "../../pipes/precio.pipe";
+import { PrecioCopPipe } from "../../pipes/precio-cop.pipe";
 
 @Component({
   selector: 'app-user-profile',
@@ -45,7 +47,9 @@ import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
     RouterModule,
     MatTableModule,
     FechaLocalPipe,
-  ],
+    PrecioPipe,
+    PrecioCopPipe
+],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })

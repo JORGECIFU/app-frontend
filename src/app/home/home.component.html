@@ -10,6 +10,7 @@
           alt="Imagen de Minería Cripto 5.0"
           width="80%"
           class="hero-content-item-image"
+          loading="eager"
         />
       </div>
       <div class="hero-content-item centered-content">
@@ -19,7 +20,7 @@
         <h2 class="hero-subtitle shadowed-text">
           Tu plataforma de minería en la nube para criptomonedas
         </h2>
-        <button mat-raised-button class="plan-button" routerLink="/signup">
+        <button mat-raised-button class="plan-button" (click)="goToPlan()">
           Comienza Ahora
         </button>
       </div>
@@ -56,21 +57,31 @@
                 </mat-card-title>
               </mat-card-header>
               <mat-card-content>
+                <p>Ganancia mínima:</p>
                 <p>
-                  Ganancia mínima:
-                  <b>{{ formatearPrecio(plan.gananciaMin) }}</b>
+                  <b>{{ plan.gananciaMin | precio }}</b>
                 </p>
                 <p>
-                  Ganancia máxima:
-                  <b>{{ formatearPrecio(plan.gananciaMax) }}</b>
+                  <b>{{ plan.gananciaMin | precioCop | async }} COP</b>
                 </p>
+                <p>Ganancia máxima:</p>
+                <p>
+                  <b>{{ plan.gananciaMax | precio }}</b>
+                </p>
+                <b>{{ plan.gananciaMax | precioCop | async }} COP</b>
                 <p>
                   <strong>Duración:</strong>
                   {{ plan.duracionDias | durationLabel }}
                 </p>
               </mat-card-content>
               <mat-card-actions>
-                <button mat-raised-button class="plan-button">Contratar</button>
+                <button
+                  mat-raised-button
+                  class="plan-button"
+                  (click)="goToPlan()"
+                >
+                  Contratar
+                </button>
               </mat-card-actions>
             </mat-card>
           </div>
@@ -82,6 +93,144 @@
       <ng-template #cargando>
         <p>Cargando planes...</p>
       </ng-template>
+    </mat-card-content>
+  </mat-card>
+</section>
+
+<!-- 3. Sección de Características/Beneficios -->
+<section class="home-content centered-content">
+  <mat-card class="main-card">
+    <mat-card-header>
+      <mat-card-title class="subtitle">
+        ¿Por qué elegir Minería Cripto 5.0?
+      </mat-card-title>
+      <mat-card-subtitle> Ventajas de minar con nosotros </mat-card-subtitle>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <div class="features-container">
+        <div class="feature-item">
+          <mat-icon class="feature-icon">flash_on</mat-icon>
+          <h3>Alto Rendimiento</h3>
+          <p>
+            Equipos de minería de última generación con la mejor eficiencia
+            energética del mercado
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <mat-icon class="feature-icon">security</mat-icon>
+          <h3>Seguridad Garantizada</h3>
+          <p>
+            Instalaciones seguras con monitoreo 24/7 y respaldo de energía para
+            proteger tu inversión
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <mat-icon class="feature-icon">trending_up</mat-icon>
+          <h3>Ganancias Transparentes</h3>
+          <p>
+            Reportes diarios de rendimiento y ganancias con total transparencia
+            en cada transacción
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <mat-icon class="feature-icon">support_agent</mat-icon>
+          <h3>Soporte Técnico</h3>
+          <p>
+            Equipo de expertos disponible para resolver cualquier duda sobre tu
+            plan de minería
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <mat-icon class="feature-icon">eco</mat-icon>
+          <h3>Energía Renovable</h3>
+          <p>
+            Compromiso con el medio ambiente utilizando fuentes de energía
+            sostenibles
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <mat-icon class="feature-icon">account_balance_wallet</mat-icon>
+          <h3>Retiros Flexibles</h3>
+          <p>
+            Retira tus ganancias cuando quieras sin comisiones ocultas ni
+            restricciones
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>
+
+<!-- 4. Sección de Estadísticas y Confianza -->
+<section class="home-content centered-content">
+  <mat-card class="main-card stats-card">
+    <mat-card-header>
+      <mat-card-title class="subtitle">
+        Números que Hablan por Sí Solos
+      </mat-card-title>
+      <mat-card-subtitle>
+        La confianza de nuestros clientes nos respalda
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <div class="stats-container">
+        <div class="stat-item">
+          <mat-icon class="stat-icon">groups</mat-icon>
+          <div class="stat-number">2,500+</div>
+          <div class="stat-label">Clientes Activos</div>
+        </div>
+
+        <div class="stat-item">
+          <mat-icon class="stat-icon">precision_manufacturing</mat-icon>
+          <div class="stat-number">150+</div>
+          <div class="stat-label">Equipos Minando</div>
+        </div>
+
+        <div class="stat-item">
+          <mat-icon class="stat-icon">monetization_on</mat-icon>
+          <div class="stat-number">$2.5M+</div>
+          <div class="stat-label">Ganancias Distribuidas</div>
+        </div>
+
+        <div class="stat-item">
+          <mat-icon class="stat-icon">schedule</mat-icon>
+          <div class="stat-number">99.9%</div>
+          <div class="stat-label">Tiempo de Actividad</div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h3>¿Listo para comenzar tu aventura en la minería?</h3>
+        <p>
+          Únete a miles de usuarios que ya están generando ingresos pasivos con
+          nuestros planes de minería
+        </p>
+        <div class="cta-buttons">
+          <button
+            mat-raised-button
+            class="plan-button primary"
+            routerLink="/registrar-usuario"
+          >
+            <mat-icon>person_add</mat-icon>
+            Registrarse Gratis
+          </button>
+          <button
+            mat-stroked-button
+            class="plan-button secondary"
+            routerLink="/login"
+          >
+            <mat-icon>login</mat-icon>
+            Iniciar Sesión
+          </button>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 </section>

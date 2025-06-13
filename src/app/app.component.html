@@ -1,7 +1,13 @@
 <!-- src/app/app.component.html -->
 <div class="page">
   <mat-toolbar class="nav" color="primary">
-    <span class="logo">Minería Cripto 5.0</span>
+    <a (click)="goToHome()" class="logo-link">
+      <img
+        src="/logo-horizontal.webp"
+        alt="Minería Cripto 5.0"
+        class="logo-image"
+      />
+    </a>
     <span class="spacer"></span>
 
     <!-- ======================

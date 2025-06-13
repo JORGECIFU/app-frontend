@@ -2,6 +2,7 @@
   height: calc(100vh - 64px); // Ajusta según el alto de tu navbar
   mat-sidenav-container {
     height: 100%;
+    border-radius: 0px;
 
     mat-sidenav {
       width: 60px;
@@ -22,6 +23,82 @@
 
           button {
             color: white;
+          }
+        }
+
+        .welcome-section {
+          padding: 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          margin-bottom: 8px;
+
+          .loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #00c6ff;
+            font-size: 0.9rem;
+
+            mat-icon {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+              animation: spin 1s linear infinite;
+            }
+          }
+
+          .user-info {
+            .welcome-text {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              color: #00c6ff;
+              font-size: 0.9rem;
+              margin-bottom: 8px;
+
+              mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+              }
+            }
+
+            .user-name {
+              color: white;
+              font-weight: 500;
+              font-size: 1rem;
+              margin-bottom: 12px;
+              padding-left: 26px;
+            }
+
+            .balance-info {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              color: gold;
+              font-size: 0.85rem;
+              font-weight: 500;
+
+              mat-icon {
+                font-size: 16px;
+                width: 16px;
+                height: 16px;
+              }
+            }
+
+            .balance-loading {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              color: #666;
+              font-size: 0.85rem;
+
+              mat-icon {
+                font-size: 14px;
+                width: 14px;
+                height: 14px;
+                animation: spin 1s linear infinite;
+              }
+            }
           }
         }
 
@@ -54,6 +131,81 @@
 
         &.expanded {
           margin-left: 25px;
+        }
+      }
+
+      .welcome-section {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        .loading {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #00c6ff;
+          font-size: 0.9rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+          }
+        }
+
+        .user-info {
+          .welcome-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #00c6ff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+          }
+
+          .user-name {
+            color: white;
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            padding-left: 26px;
+          }
+
+          .balance-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: gold;
+            font-size: 0.85rem;
+            font-weight: 500;
+
+            mat-icon {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+            }
+          }
+
+          .balance-loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.85rem;
+
+            mat-icon {
+              font-size: 14px;
+              width: 14px;
+              height: 14px;
+              animation: spin 1s linear infinite;
+            }
+          }
         }
       }
     }

@@ -65,7 +65,7 @@
           </ng-container>
 
           <ng-container matColumnDef="precioAlquiler">
-            <th mat-header-cell *matHeaderCellDef>Precio</th>
+            <th mat-header-cell *matHeaderCellDef>Precio (USD)</th>
             <td mat-cell *matCellDef="let alquiler">
               {{
                 alquiler.precioAlquiler | currency: "USD" : "symbol" : "1.2-2"
@@ -135,7 +135,7 @@
           </ng-container>
 
           <ng-container matColumnDef="precioAlquiler">
-            <th mat-header-cell *matHeaderCellDef>Precio</th>
+            <th mat-header-cell *matHeaderCellDef>Precio (USD)</th>
             <td mat-cell *matCellDef="let alquiler">
               {{
                 alquiler.precioAlquiler | currency: "USD" : "symbol" : "1.2-2"
@@ -144,7 +144,7 @@
           </ng-container>
 
           <ng-container matColumnDef="montoDevuelto">
-            <th mat-header-cell *matHeaderCellDef>Monto Devuelto</th>
+            <th mat-header-cell *matHeaderCellDef>Monto Devuelto (USD)</th>
             <td mat-cell *matCellDef="let alquiler">
               {{
                 alquiler.montoDevuelto | currency: "USD" : "symbol" : "1.2-2"

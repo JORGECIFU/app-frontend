@@ -141,7 +141,7 @@
                 <div class="detail-text">
                   <p class="detail-label">Ganancia Mínima</p>
                   <p class="detail-value">
-                    {{ formatearPrecio(plan.gananciaMin || 0) }} diario
+                    {{ plan.gananciaMin | precio }} diario
                   </p>
                 </div>
               </div>
@@ -151,7 +151,7 @@
                 <div class="detail-text">
                   <p class="detail-label">Ganancia Máxima</p>
                   <p class="detail-value">
-                    {{ formatearPrecio(plan.gananciaMax || 0) }} diario
+                    {{ plan.gananciaMax | precio }} diario
                   </p>
                 </div>
               </div>
@@ -173,7 +173,7 @@
                   <p
                     class="detail-value text-muted text-decoration-line-through"
                   >
-                    <s>{{ formatearPrecio(plan.precioBruto || 0) }}</s>
+                    <s>{{ plan.precioBruto | precio }}</s>
                   </p>
                 </div>
               </div>
@@ -185,7 +185,7 @@
                 <div class="detail-text">
                   <p class="detail-label">Precio Actual</p>
                   <p class="detail-value text-success fw-bold">
-                    {{ formatearPrecio(plan.precioAlquiler || 0) }}
+                    {{ plan.precioAlquiler | precio }}
                   </p>
                 </div>
               </div>
@@ -195,7 +195,7 @@
                 <div class="detail-text">
                   <p class="detail-label">Rendimientos Esperados</p>
                   <p class="detail-value text-info">
-                    {{ formatearPrecio(plan.gananciaMaxUsuario || 0) }}
+                    {{ plan.gananciaMaxUsuario | precio }}
                   </p>
                 </div>
               </div>

@@ -9,21 +9,21 @@
   /* Para pantallas menores a 23.75rem (380px) */
   @media screen and (max-width: 23.75rem) {
     max-width: 24.8rem; /* 396.8px */
-    margin: 0 auto;
+    margin: 2rem auto;
     padding: 0 2cqw;
   }
 
   /* Para pantallas entre 23.75rem (380px) y 64rem (1024px) */
   @media screen and (min-width: 23.75rem) and (max-width: 64rem) {
     max-width: 50rem; /* 800px */
-    margin: 0 auto;
+    margin: 2rem auto;
     padding: 0 6cqw;
   }
 
   /* Para pantallas mayores a 64rem (1024px) */
   @media screen and (min-width: 64rem) {
     max-width: 93.75rem; /* 1500px */
-    margin: 0 auto;
+    margin: 2rem auto;
     padding: 0 7cqw;
   }
 }
@@ -56,7 +56,7 @@
 
 .plan-card {
   background-color: white;
-  max-width: fit-content;
+  max-width: 100%;
 }
 
 .card-title {
@@ -136,4 +136,166 @@
   font-size: clamp(1.5rem, 2vw, 2.5rem);
   font-weight: bold;
   margin-bottom: 1rem;
+}
+
+/* Estilos para la sección de características */
+.features-container {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem 0;
+
+  /* Layout responsive */
+  grid-template-columns: 1fr;
+  @media screen and (min-width: 42rem) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (min-width: 64rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-item {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.1);
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    margin-bottom: 1rem;
+    color: #00c6ff;
+  }
+
+  h3 {
+    color: #1a2b3c;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  p {
+    color: #666;
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+}
+
+/* Estilos para la sección de estadísticas */
+.stats-card {
+  margin-bottom: 4rem;
+}
+
+.stats-container {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem 0;
+
+  /* Layout responsive */
+  grid-template-columns: 1fr;
+  @media screen and (min-width: 42rem) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (min-width: 64rem) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: rgba(0, 198, 255, 0.05);
+
+  .stat-icon {
+    font-size: 2.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    margin-bottom: 1rem;
+    color: gold;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1a2b3c;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+/* Estilos para la sección CTA */
+.cta-section {
+  text-align: center;
+  padding: 3rem 1rem;
+  margin-top: 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(26, 43, 60, 0.05) 0%,
+    rgba(0, 198, 255, 0.05) 100%
+  );
+  border-radius: 8px;
+
+  h3 {
+    color: #1a2b3c;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .plan-button {
+    min-width: 200px;
+
+    &.primary {
+      background-color: gold;
+      color: #1a2b3c;
+
+      &:hover {
+        background-color: #ffd700;
+      }
+    }
+
+    &.secondary {
+      background-color: transparent;
+      color: #164f5e;
+      border: 2px solid #255562;
+
+      &:hover {
+        background-color: rgba(0, 198, 255, 0.05);
+      }
+    }
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
 }

@@ -37,6 +37,7 @@ export class CrearMonederoDialogComponent {
   criptomonedas = [
     { codigo: 'BTC', nombre: 'Bitcoin', icono: '₿' },
     { codigo: 'ETH', nombre: 'Ethereum', icono: 'Ξ' },
+    { codigo: 'DOGE', nombre: 'Dogecoin', icono: 'Ð' },
   ];
 
   constructor(
