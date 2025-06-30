@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/enviroment';
-import { Observable, throwError, switchMap } from 'rxjs';
+import { Observable, throwError, switchMap, BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';
+import { tap } from 'rxjs/operators';
 
 interface Usuario {
   id: number;
@@ -35,6 +36,8 @@ export interface CrearTransaccionRequest {
 })
 export class CuentaService {
   private baseUrl = environment.apiUrl;
+  private saldoSubject = new BehaviorSubject<number | null>(null);
+  saldo$ = this.saldoSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -50,10 +53,15 @@ export class CuentaService {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<Cuenta>(
-      `${this.baseUrl}/plataforma/cuenta/${usuarioId}`,
-      { headers },
-    );
+    return this.http
+      .get<Cuenta>(`${this.baseUrl}/plataforma/cuenta/${usuarioId}`, {
+        headers,
+      })
+      .pipe(
+        tap((cuenta: Cuenta) => {
+          this.saldoSubject.next(cuenta.balance);
+        }),
+      );
   }
 
   realizarTransaccion(transaccion: CrearTransaccionRequest): Observable<any> {
@@ -70,11 +78,18 @@ export class CuentaService {
       .pipe(
         switchMap((usuario) => {
           // Luego realizamos la transacción con el ID del usuario
-          return this.http.post(
-            `${this.baseUrl}/plataforma/cuenta/${usuario.id}/transacciones`,
-            transaccion,
-            { headers },
-          );
+          return this.http
+            .post(
+              `${this.baseUrl}/plataforma/cuenta/${usuario.id}/transacciones`,
+              transaccion,
+              { headers },
+            )
+            .pipe(
+              tap(() => {
+                // Actualizar el saldo después de la transacción
+                this.obtenerCuenta(usuario.id).subscribe();
+              }),
+            );
         }),
       );
   }

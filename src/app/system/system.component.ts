@@ -52,6 +52,13 @@ export class SystemComponent implements OnInit {
 
   ngOnInit() {
     this.cargarPerfilUsuario();
+
+    // Suscribirse al saldo$ para actualizaciones en tiempo real
+    this.cuentaService.saldo$.subscribe((saldo) => {
+      if (this.cuenta) {
+        this.cuenta.balance = saldo ?? this.cuenta.balance;
+      }
+    });
   }
 
   cargarPerfilUsuario() {
