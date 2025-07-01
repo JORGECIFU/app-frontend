@@ -44,10 +44,12 @@ export class RendimientoService {
       `Bearer ${this.authService.getToken()}`,
     );
 
+    // TODO trabajar con fechas en formato ISO
     // Convertir fechas a formato ISO manteniendo la hora local (Colombia)
     // El backend espera las fechas en horario de Colombia, no UTC
     const fechaInicioISO = this.formatearFechaParaBackend(fechaInicio);
     const fechaFinISO = this.formatearFechaParaBackend(fechaFin);
+
 
     const params = `fechaInicio=${fechaInicioISO}&fechaFin=${fechaFinISO}`;
 
@@ -57,6 +59,7 @@ export class RendimientoService {
     );
   }
 
+  // TODO trabajar con fechas en formato ISO
   /**
    * Formatea una fecha para enviar al backend en horario de Colombia
    * Evita la conversión automática a UTC que hace toISOString()

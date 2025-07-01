@@ -15,10 +15,8 @@ export class FechaLocalPipe implements PipeTransform {
       // El backend envía fechas con 5 horas de más, necesitamos corregir esto
       const fechaBackend = new Date(fecha);
 
-      // Restar 5 horas (5 * 60 * 60 * 1000 = 18000000 milisegundos)
-      const fechaCorrecta = new Date(
-        fechaBackend.getTime() - 5 * 60 * 60 * 1000,
-      );
+      //TODO - FIX arreglado pipe para hora desde el backend
+      const fechaCorrecta = new Date(fechaBackend.getTime());
 
       // Formatear la fecha corregida
       const dia = fechaCorrecta.getDate().toString().padStart(2, '0');

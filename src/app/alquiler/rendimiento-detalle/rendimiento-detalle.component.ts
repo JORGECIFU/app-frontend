@@ -159,6 +159,34 @@ export class RendimientoDetalleComponent
     }
   }
 
+  /** Convierte timestamp UTC (segundos) a UTC corregido según hora local */
+  private timeToLocal(originalTimeSec: number): number {
+    const d = new Date(originalTimeSec * 1000);
+    return (
+      Date.UTC(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+        d.getHours(),
+        d.getMinutes(),
+        d.getSeconds(),
+        d.getMilliseconds(),
+      ) / 1000
+    );
+  }
+
+  /**
+   * Inicializa el gráfico de rendimiento.
+   *
+   * Este método configura el contenedor del gráfico, crea el gráfico y la serie de línea,
+   * y establece las opciones necesarias para su correcto funcionamiento.
+   *
+   * @remarks
+   * Se asegura de que el contenedor exista y esté en el DOM antes de proceder con la inicialización.
+   * Si no se puede inicializar inmediatamente, reintenta después de un breve delay.
+   *
+   * @private
+   */
   private initChart(): void {
     // Verificar que el contenedor exista
     if (!this.chartContainer?.nativeElement) {
@@ -179,8 +207,8 @@ export class RendimientoDetalleComponent
 
     // Configurar estilos del contenedor
     element.style.display = 'block';
-    element.style.width = '100%';
-    element.style.height = '350px';
+    element.style.width = '95%';
+    element.style.height = '330px';
 
     try {
       // Limpiar cualquier gráfico anterior
@@ -207,11 +235,18 @@ export class RendimientoDetalleComponent
         },
         rightPriceScale: {
           borderColor: '#cccccc',
+          autoScale: true, // Habilitar auto scaling para el eje Y
+          scaleMargins: {
+            top: 0.1,
+            bottom: 0.1,
+          },
         },
         timeScale: {
           borderColor: '#cccccc',
           timeVisible: true,
           secondsVisible: false,
+          barSpacing: 8, // Espaciado entre barras
+          shiftVisibleRangeOnNewBar: true,
         },
       };
 
@@ -221,6 +256,29 @@ export class RendimientoDetalleComponent
       this.lineSeries = this.chart.addSeries(LineSeries, {
         color: '#00c6ff',
         lineWidth: 2,
+        priceFormat: {
+          type: 'custom',
+          formatter: (price: number) => {
+            return `$${price.toFixed(8)} USD`;
+          },
+        },
+      });
+
+      // Configurar el price scale después de crear la serie
+      this.lineSeries.priceScale().applyOptions({
+        autoScale: true,
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.1,
+        },
+      });
+
+      // Configurar el time scale después de crear el gráfico
+      this.chart.timeScale().applyOptions({
+        timeVisible: true,
+        secondsVisible: false,
+        borderColor: '#cccccc',
+        barSpacing: 8,
       });
 
       // Hacer el gráfico responsivo
@@ -265,20 +323,6 @@ export class RendimientoDetalleComponent
 
     // Auto-ajustar horas para búsquedas estándar
     this.ajustarHorasParaBusqueda(fechaInicioAjustada, fechaFinAjustada);
-
-    // Debug: mostrar fechas antes de enviar al backend
-    console.log('=== FECHAS PARA ENVIAR AL BACKEND ===');
-    console.log('Fecha inicio original:', fechaInicio.toLocaleString('es-CO'));
-    console.log('Fecha fin original:', fechaFin.toLocaleString('es-CO'));
-    console.log(
-      'Fecha inicio ajustada:',
-      fechaInicioAjustada.toLocaleString('es-CO'),
-    );
-    console.log(
-      'Fecha fin ajustada:',
-      fechaFinAjustada.toLocaleString('es-CO'),
-    );
-    console.log('=====================================');
 
     // Validar que fecha inicio sea menor que fecha fin
     if (fechaInicioAjustada >= fechaFinAjustada) {
@@ -325,6 +369,25 @@ export class RendimientoDetalleComponent
     }
   }
 
+  /**
+   * Actualiza la gráfica de rendimiento con los datos disponibles.
+   *
+   * Este método realiza las siguientes operaciones:
+   * 1. Verifica que el gráfico esté inicializado, intentando inicializarlo si no lo está
+   * 2. Procesa los datos de rendimiento para adaptarlos al formato requerido por lightweight-charts
+   * 3. Convierte las marcas de tiempo para manejar correctamente la visualización
+   *
+   * @remarks
+   * Existe una discrepancia importante entre cómo se almacenan las fechas en la base de datos
+   * (en formato local) y cómo la biblioteca lightweight-charts espera los datos (en UTC).
+   * Por esto se utiliza el método `timeToLocal()` para realizar la corrección necesaria,
+   * asegurando que las fechas se muestren correctamente en el eje horizontal del gráfico.
+   *
+   * Si no hay datos disponibles o ocurre un error durante la actualización,
+   * el método registra los mensajes correspondientes en la consola.
+   *
+   * @private
+   */
   private actualizarGrafica(): void {
     // Si el gráfico no está inicializado, intentar inicializarlo
     if (!this.lineSeries || !this.chart) {
@@ -340,6 +403,7 @@ export class RendimientoDetalleComponent
     }
 
     if (!this.rendimientos || this.rendimientos.length === 0) {
+      console.warn('No hay datos de rendimientos para mostrar');
       return;
     }
 
@@ -347,39 +411,19 @@ export class RendimientoDetalleComponent
     // { value: number, time: number (timestamp en segundos) }
     const datos: LineData[] = [];
 
+    // Recorrer los rendimientos y extraer los datos necesarios
+    // Asegurarse de que cada rendimiento tenga una fechaHora válida
     this.rendimientos.forEach((rendimiento) => {
       rendimiento.rendimientos.forEach((r) => {
-        try {
-          // El backend ya envía las fechas en horario de Colombia
-          // Tratamos la fecha como local (Colombia) sin conversión UTC
-          const fecha = this.parsearFechaComoLocal(r.fechaHora);
-
-          // Debug: mostrar conversión de fechas
-          console.log('Fecha original backend:', r.fechaHora);
-          console.log('Fecha procesada:', fecha.toLocaleString('es-CO'));
-          console.log('Fecha UTC:', new Date(r.fechaHora).toUTCString());
-          console.log('---');
-
-          // Verificar que la fecha sea válida
-          if (isNaN(fecha.getTime())) {
-            console.warn('Fecha inválida encontrada:', r.fechaHora);
-            return;
-          }
-
-          // Convertir a timestamp en segundos (como requiere lightweight-charts)
-          const timestamp = Math.floor(fecha.getTime() / 1000) as Time;
-
-          datos.push({
-            value: r.valor,
-            time: timestamp,
-          });
-        } catch (error) {
-          console.error('Error procesando punto de datos:', error, r);
-        }
+        const fecha = new Date(r.fechaHora);
+        const secs = Math.floor(fecha.getTime() / 1000);
+        const corrected = this.timeToLocal(secs);
+        datos.push({ time: corrected as Time, value: r.valor });
       });
     });
 
     if (datos.length === 0) {
+      console.warn('No se pudieron procesar datos válidos para la gráfica');
       return;
     }
 
@@ -390,12 +434,21 @@ export class RendimientoDetalleComponent
       return 0;
     });
 
+    console.log(`Procesados ${datos.length} puntos de datos para la gráfica`);
+    console.log('Rango de valores:', {
+      min: Math.min(...datos.map((d) => d.value)),
+      max: Math.max(...datos.map((d) => d.value)),
+      promedio: datos.reduce((sum, d) => sum + d.value, 0) / datos.length,
+    });
+
     try {
       // Establecer los datos en la serie (como en la documentación)
       this.lineSeries.setData(datos);
 
       // Ajustar la vista para mostrar todos los datos (como en la documentación)
       this.chart.timeScale().fitContent();
+
+      console.log('Gráfica actualizada exitosamente');
     } catch (error) {
       console.error('Error al actualizar la gráfica:', error);
     }
@@ -450,34 +503,5 @@ export class RendimientoDetalleComponent
     setTimeout(() => {
       this.cargarRendimientos();
     }, 100);
-  }
-
-  /**
-   * Parsea una fecha ISO string como fecha local (Colombia)
-   * sin aplicar conversión UTC automática de JavaScript
-   */
-  private parsearFechaComoLocal(fechaISO: string): Date {
-    // El backend envía: "2025-06-30T20:12:09.553308351"
-    // Método más simple: agregar el sufijo de zona horaria de Colombia
-    // para que JavaScript no lo interprete como UTC
-
-    // Si la fecha no tiene zona horaria, agregar -05:00 (Colombia)
-    let fechaConZona = fechaISO;
-    if (
-      !fechaISO.includes('+') &&
-      !fechaISO.includes('Z') &&
-      !fechaISO.includes('-', 10)
-    ) {
-      // Truncar microsegundos a 3 dígitos (milisegundos) si es necesario
-      if (fechaISO.includes('.')) {
-        const partes = fechaISO.split('.');
-        const milisegundos = partes[1].substring(0, 3);
-        fechaConZona = `${partes[0]}.${milisegundos}-05:00`;
-      } else {
-        fechaConZona = `${fechaISO}-05:00`;
-      }
-    }
-
-    return new Date(fechaConZona);
   }
 }
