@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { RegistroService } from '../services/registro.service';
 
+
 @Component({
   selector: 'app-registrar-usuario',
   standalone: true,
