@@ -600,22 +600,79 @@ export class RendimientoDetalleComponent
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // Configurar fuentes y colores
+      let yPosition = 20; // Posición inicial por defecto
+
+      // Cargar y agregar el logo
+      try {
+        const logo = new Image();
+        logo.src = '/assets/logo-horizontal.png';
+
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Tiempo de espera agotado al cargar el logo'));
+          }, 3000);
+
+          logo.onload = () => {
+            clearTimeout(timeout);
+            resolve(true);
+          };
+
+          logo.onerror = (e: Event | string) => {
+            clearTimeout(timeout);
+            reject(new Error('Error al cargar el logo'));
+          };
+        });
+
+        // Convertir la imagen a canvas para poder agregarla al PDF
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx)
+          throw new Error('No se pudo obtener el contexto 2D del canvas');
+
+        canvas.width = logo.width;
+        canvas.height = logo.height;
+        ctx.drawImage(logo, 0, 0);
+        const imgData = canvas.toDataURL('image/png');
+
+        // Calcular dimensiones del logo (máximo 40mm de ancho)
+        const maxLogoWidth = 40;
+        const aspectRatio = logo.height / logo.width;
+        const logoWidth = Math.min(maxLogoWidth, pageWidth - 40);
+        const logoHeight = logoWidth * aspectRatio;
+
+        // Agregar logo centrado
+        pdf.addImage(
+          imgData,
+          'PNG',
+          (pageWidth - logoWidth) / 2,
+          yPosition,
+          logoWidth,
+          logoHeight,
+        );
+
+        // Ajustar posición inicial del contenido después del logo
+        yPosition = yPosition + logoHeight + 10; // 10mm de espacio después del logo
+      } catch (error) {
+        console.warn('No se pudo agregar el logo al PDF:', error);
+        // Continuamos sin el logo, usando la posición inicial
+      }
+
+      // Configurar fuentes y colores para el título
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(20);
       pdf.setTextColor(33, 150, 243); // Azul Material
 
       // Título del documento
-      pdf.text('Reporte de Rendimientos', pageWidth / 2, 20, {
+      pdf.text('Reporte de Rendimientos', pageWidth / 2, yPosition, {
         align: 'center',
       });
 
       // Línea divisora
       pdf.setDrawColor(33, 150, 243);
       pdf.setLineWidth(0.5);
-      pdf.line(20, 25, pageWidth - 20, 25);
+      pdf.line(20, yPosition + 5, pageWidth - 20, yPosition + 5);
 
-      let yPosition = 35;
+      yPosition += 15;
 
       // Información del alquiler
       pdf.setFont('helvetica', 'bold');
