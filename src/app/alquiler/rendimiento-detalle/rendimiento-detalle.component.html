@@ -206,6 +206,28 @@
   </mat-dialog-content>
 
   <mat-dialog-actions>
+    <button
+      mat-stroked-button
+      color="accent"
+      (click)="generarPDF()"
+      [disabled]="
+        !datosInicializados ||
+        rendimientos.length === 0 ||
+        cargando ||
+        generandoPDF
+      "
+    >
+      @if (generandoPDF) {
+        <mat-spinner diameter="16" style="margin-right: 8px"></mat-spinner>
+        Generando...
+      } @else {
+        <ng-container>
+          <mat-icon>picture_as_pdf</mat-icon>
+          Generar PDF
+        </ng-container>
+      }
+    </button>
+
     <button mat-button (click)="cerrar()">
       <mat-icon>close</mat-icon>
       Cerrar

@@ -44,6 +44,8 @@ import {
   RendimientoMaquina,
 } from '../../services/rendimiento.service';
 import { Alquiler } from '../../models/alquiler.model';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 export interface RendimientoDialogData {
   alquiler: Alquiler;
   maquinaId: number;
@@ -79,6 +81,7 @@ export class RendimientoDetalleComponent
   private resizeObserver: ResizeObserver | null = null;
 
   cargando = false;
+  generandoPDF = false;
   error: string | null = null;
   rendimientos: RendimientoMaquina[] = [];
   datosInicializados = false; // Para controlar si se han cargado datos por primera vez
@@ -579,5 +582,164 @@ export class RendimientoDetalleComponent
     setTimeout(() => {
       this.cargarRendimientos();
     }, 100);
+  }
+
+  /**
+   * Genera un reporte PDF con la información del alquiler y rendimientos
+   */
+  async generarPDF(): Promise<void> {
+    if (!this.datosInicializados || this.rendimientos.length === 0) {
+      return;
+    }
+
+    this.generandoPDF = true;
+
+    try {
+      // Crear nuevo documento PDF
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Configurar fuentes y colores
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(20);
+      pdf.setTextColor(33, 150, 243); // Azul Material
+
+      // Título del documento
+      pdf.text('Reporte de Rendimientos', pageWidth / 2, 20, {
+        align: 'center',
+      });
+
+      // Línea divisora
+      pdf.setDrawColor(33, 150, 243);
+      pdf.setLineWidth(0.5);
+      pdf.line(20, 25, pageWidth - 20, 25);
+
+      let yPosition = 35;
+
+      // Información del alquiler
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Información del Alquiler', 20, yPosition);
+      yPosition += 8;
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(11);
+
+      const alquilerInfo = [
+        `Plan ID: ${this.data.alquiler.planId}`,
+        `Máquina: ${this.obtenerSerialMaquina()}`,
+        `Período: ${new Date(this.data.alquiler.fechaInicio).toLocaleDateString('es-CO')} - ${new Date(this.data.alquiler.fechaFin).toLocaleDateString('es-CO')}`,
+        `Estado: ${this.data.alquiler.estado}`,
+        `Precio Alquiler: $${this.data.alquiler.precioAlquiler.toFixed(2)} USD`,
+        `Costo Total: $${this.data.alquiler.costoTotal.toFixed(2)} USD`,
+      ];
+
+      alquilerInfo.forEach((info) => {
+        pdf.text(info, 25, yPosition);
+        yPosition += 6;
+      });
+
+      yPosition += 5;
+
+      // Resumen de rendimientos
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(14);
+      pdf.text('Resumen de Rendimientos', 20, yPosition);
+      yPosition += 8;
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(11);
+
+      const fechaInicio = this.fechaForm.get('fechaInicio')?.value;
+      const fechaFin = this.fechaForm.get('fechaFin')?.value;
+
+      if (fechaInicio && fechaFin) {
+        pdf.text(
+          `Período consultado: ${fechaInicio.toLocaleDateString('es-CO')} - ${fechaFin.toLocaleDateString('es-CO')}`,
+          25,
+          yPosition,
+        );
+        yPosition += 6;
+      }
+
+      const resumenInfo = [
+        `Total Generado: $${this.obtenerTotalRendimiento().toFixed(8)} USD`,
+        `Registros: ${this.obtenerTotalRegistros()}`,
+        `Tiempo de Operación: ${this.obtenerTiempoOperacion()}`,
+      ];
+
+      resumenInfo.forEach((info) => {
+        pdf.text(info, 25, yPosition);
+        yPosition += 6;
+      });
+
+      yPosition += 10;
+
+      // Capturar la gráfica si existe
+      if (this.chartContainer && this.chartContainer.nativeElement) {
+        try {
+          // Crear canvas de la gráfica
+          const canvas = await html2canvas(this.chartContainer.nativeElement, {
+            backgroundColor: '#ffffff',
+            scale: 2, // Mayor resolución
+            useCORS: true,
+            allowTaint: true,
+            height: 350,
+            width: this.chartContainer.nativeElement.offsetWidth,
+          });
+
+          // Convertir canvas a imagen
+          const imgData = canvas.toDataURL('image/png');
+
+          // Calcular dimensiones para ajustar la imagen en el PDF
+          const imgWidth = pageWidth - 40; // Margen de 20mm a cada lado
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+          // Verificar si necesitamos una nueva página
+          if (yPosition + imgHeight > pageHeight - 20) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+
+          // Título de la gráfica
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(14);
+          pdf.text('Gráfica de Rendimientos', 20, yPosition);
+          yPosition += 10;
+
+          // Agregar la imagen de la gráfica
+          pdf.addImage(imgData, 'PNG', 20, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 10;
+        } catch (error) {
+          console.warn('No se pudo capturar la gráfica:', error);
+          pdf.setFont('helvetica', 'italic');
+          pdf.setFontSize(10);
+          pdf.text('(Gráfica no disponible)', 25, yPosition);
+          yPosition += 10;
+        }
+      }
+
+      // Pie de página
+      const fechaGeneracion = new Date().toLocaleString('es-CO');
+      pdf.setFont('helvetica', 'italic');
+      pdf.setFontSize(8);
+      pdf.setTextColor(128, 128, 128);
+      pdf.text(`Generado el: ${fechaGeneracion}`, 20, pageHeight - 10);
+
+      // Generar nombre del archivo
+      const nombreArchivo = `rendimientos_${this.obtenerSerialMaquina()}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Descargar el PDF
+      pdf.save(nombreArchivo);
+
+      console.log('PDF generado exitosamente:', nombreArchivo);
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      this.error = 'Error al generar el reporte PDF';
+    } finally {
+      this.generandoPDF = false;
+    }
   }
 }
