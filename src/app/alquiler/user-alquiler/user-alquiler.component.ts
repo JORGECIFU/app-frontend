@@ -7,11 +7,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { AlquilerService } from '../../services/alquiler.service';
 import { PlanService } from '../../services/plan.service';
 import { Alquiler } from '../../models/alquiler.model';
 import { Plan } from '../../models/plan.model';
 import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
+import { RendimientoDetalleComponent } from '../rendimiento-detalle/rendimiento-detalle.component';
 
 @Component({
   selector: 'app-user-alquiler',
@@ -23,6 +26,7 @@ import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
     MatButtonModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     FechaLocalPipe,
   ],
   templateUrl: './user-alquiler.component.html',
@@ -40,6 +44,7 @@ export class UserAlquilerComponent implements OnInit {
     private alquilerService: AlquilerService,
     private planService: PlanService,
     private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -98,5 +103,18 @@ export class UserAlquilerComponent implements OnInit {
 
   irAPerfil(): void {
     this.router.navigate(['/system/usuario']);
+  }
+
+  verDetallesRendimiento(alquiler: Alquiler): void {
+    this.dialog.open(RendimientoDetalleComponent, {
+      width: '90vw',
+      maxWidth: '1200px',
+      height: '80vh',
+      maxHeight: '800px',
+      data: {
+        alquiler,
+        maquinaId: alquiler.maquinaId,
+      },
+    });
   }
 }

@@ -1,0 +1,207 @@
+<div class="rendimiento-dialog">
+  <mat-dialog-content>
+    <div class="dialog-header">
+      <h2 mat-dialog-title>
+        <mat-icon>trending_up</mat-icon>
+        Rendimientos del Alquiler
+      </h2>
+
+      <!-- Información del alquiler -->
+      <div class="alquiler-info">
+        <div class="info-item">
+          <span class="label">Plan:</span>
+          <span class="value">{{ data.alquiler.planId }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Máquina:</span>
+          <span class="value">{{ obtenerSerialMaquina() }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Período:</span>
+          <span class="value">
+            {{ data.alquiler.fechaInicio | date: "dd/MM/yyyy" }} -
+            {{ data.alquiler.fechaFin | date: "dd/MM/yyyy" }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles de fecha -->
+    <div class="controles-fecha">
+      <h3>Seleccionar Período de Consulta</h3>
+      <p class="fecha-hint">
+        <mat-icon>info</mat-icon>
+        Las búsquedas incluirán todo el día: desde las 00:00 hasta las 23:59
+      </p>
+      <form [formGroup]="fechaForm" class="fecha-form">
+        <!-- Primera fila: Fecha y hora de inicio -->
+        <div class="fecha-fila">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Inicio</mat-label>
+            <input
+              matInput
+              [matDatepicker]="fechaInicioPicker"
+              formControlName="fechaInicio"
+              [min]="fechaMinima"
+              [max]="fechaMaxima"
+              placeholder="Seleccione fecha de inicio"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="fechaInicioPicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #fechaInicioPicker></mat-datepicker>
+            <mat-error
+              *ngIf="fechaForm.get('fechaInicio')?.hasError('required')"
+            >
+              Fecha de inicio es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Inicio</mat-label>
+            <input
+              matInput
+              [matTimepicker]="horaInicioPicker"
+              formControlName="fechaInicio"
+              placeholder="Seleccione hora"
+            />
+            <mat-timepicker-toggle
+              matIconSuffix
+              [for]="horaInicioPicker"
+            ></mat-timepicker-toggle>
+            <mat-timepicker #horaInicioPicker interval="15min"></mat-timepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Segunda fila: Fecha y hora de fin -->
+        <div class="fecha-fila">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Fecha de Fin</mat-label>
+            <input
+              matInput
+              [matDatepicker]="fechaFinPicker"
+              formControlName="fechaFin"
+              [min]="fechaMinima"
+              [max]="fechaMaxima"
+              placeholder="Seleccione fecha de fin"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="fechaFinPicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #fechaFinPicker></mat-datepicker>
+            <mat-error *ngIf="fechaForm.get('fechaFin')?.hasError('required')">
+              Fecha de fin es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Hora de Fin</mat-label>
+            <input
+              matInput
+              [matTimepicker]="horaFinPicker"
+              formControlName="fechaFin"
+              placeholder="Seleccione hora"
+            />
+            <mat-timepicker-toggle
+              matIconSuffix
+              [for]="horaFinPicker"
+            ></mat-timepicker-toggle>
+            <mat-timepicker #horaFinPicker interval="15min"></mat-timepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Tercera fila: Botones -->
+        <div class="botones-fila">
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="cargarRendimientos()"
+            [disabled]="fechaForm.invalid || cargando"
+          >
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+          </button>
+
+          <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            (click)="resetearFechasAlquiler()"
+            [disabled]="cargando"
+          >
+            <mat-icon>restore</mat-icon>
+            Período Alquiler
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Área de contenido -->
+    <div class="contenido-rendimientos">
+      <!-- Contenedor del gráfico (siempre presente para ViewChild) -->
+      <div
+        class="grafica-contenedor"
+        [style.display]="
+          datosInicializados && rendimientos.length > 0 ? 'block' : 'none'
+        "
+      >
+        <div #chartContainer class="chart-container"></div>
+      </div>
+
+      @if (cargando) {
+        <div class="cargando-contenedor">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando rendimientos...</p>
+        </div>
+      } @else if (!datosInicializados) {
+        <div class="mensaje-inicial-contenedor">
+          <mat-icon>show_chart</mat-icon>
+          <p>
+            Selecciona un rango de fechas y haz clic en "Actualizar" para ver
+            los rendimientos
+          </p>
+        </div>
+      } @else if (error) {
+        <div class="error-contenedor">
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ error }}</p>
+        </div>
+      } @else if (rendimientos.length === 0) {
+        <div class="sin-datos-contenedor">
+          <mat-icon>info</mat-icon>
+          <p>No se encontraron rendimientos para el período seleccionado</p>
+        </div>
+      } @else {
+        <!-- Resumen -->
+        <div class="resumen-rendimientos">
+          <div class="resumen-item">
+            <mat-icon>attach_money</mat-icon>
+            <div>
+              <span class="label">Total Generado:</span>
+              <span class="valor"
+                >${{ obtenerTotalRendimiento().toFixed(6) }} USD</span
+              >
+            </div>
+          </div>
+          <div class="resumen-item">
+            <mat-icon>timeline</mat-icon>
+            <div>
+              <span class="label">Registros:</span>
+              <span class="valor">{{ obtenerTotalRegistros() }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="cerrar()">
+      <mat-icon>close</mat-icon>
+      Cerrar
+    </button>
+  </mat-dialog-actions>
+</div>

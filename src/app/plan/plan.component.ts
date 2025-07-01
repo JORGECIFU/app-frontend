@@ -7,22 +7,14 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
 
 import { Plan } from '../models/plan.model';
 import { PlanService, PlanConPrecios } from '../services/plan.service';
 import { AlquilerService } from '../services/alquiler.service';
 import { AuthRolesService } from '../services/auth-roles.service';
-import { DurationLabelPipe } from '../pipes/duration-label.pipe';
-import { PrecioPipe } from '../pipes/precio.pipe';
+import { AdminPlanComponent } from './admin-plan/admin-plan.component';
+import { UserPlanComponent } from './user-plan/user-plan.component';
 
 @Component({
   selector: 'app-plan',
@@ -30,16 +22,8 @@ import { PrecioPipe } from '../pipes/precio.pipe';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatCardModule,
-    DurationLabelPipe,
-    PrecioPipe,
+    AdminPlanComponent,
+    UserPlanComponent,
   ],
   templateUrl: './plan.component.html',
   styleUrls: ['./plan.component.scss'],
@@ -185,35 +169,6 @@ export class PlanComponent implements OnInit {
     this.planForm.reset();
   }
 
-  irAAlquiler(plan: Plan) {
-    this.router.navigate(['/system/alquiler'], {
-      queryParams: { planId: plan.id },
-    });
-  }
-
-  getImagenPlan(nombrePlan: string): string {
-    const nombreNormalizado = nombrePlan.toLowerCase().trim();
-    if (nombreNormalizado.includes('basic')) {
-      return '/basic_img.webp';
-    } else if (nombreNormalizado.includes('gold')) {
-      return '/gold_img.webp';
-    } else if (nombreNormalizado.includes('premium')) {
-      return '/premium_img.webp';
-    } else if (nombreNormalizado.includes('vip')) {
-      return '/vip_img.webp';
-    }
-    return '/basic_img.webp'; // imagen por defecto
-  }
-
-  formatearPrecio(precio: number): string {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(precio);
-  }
-
   async crearAlquiler(plan: Plan) {
     const { value: texto } = await Swal.fire({
       title: 'Confirmar Alquiler',
@@ -272,5 +227,14 @@ export class PlanComponent implements OnInit {
         },
       });
     }
+  }
+
+  private formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(precio);
   }
 }
