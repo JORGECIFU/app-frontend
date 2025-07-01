@@ -5,7 +5,10 @@ import {
   Output,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,17 +20,26 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterModule } from '@angular/router';
+import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
+import { PrecioPipe } from '../../pipes/precio.pipe';
+import { PrecioCopPipe } from '../../pipes/precio-cop.pipe';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpResponse,
+} from '@angular/common/http';
 import { Usuario } from '../../models/usuario.model';
+import { ProfilePhotoService } from '../../services/profile-photo.service';
 import {
   Cuenta,
   CuentaService,
   Transaccion,
 } from '../../services/cuenta.service';
-import { Router, RouterModule } from '@angular/router';
-import { FechaLocalPipe } from '../../pipes/fecha-local.pipe';
-import { PrecioPipe } from "../../pipes/precio.pipe";
-import { PrecioCopPipe } from "../../pipes/precio-cop.pipe";
 
 @Component({
   selector: 'app-user-profile',
@@ -44,24 +56,30 @@ import { PrecioCopPipe } from "../../pipes/precio-cop.pipe";
     MatDividerModule,
     MatTabsModule,
     MatProgressSpinnerModule,
-    RouterModule,
+    MatProgressBarModule,
     MatTableModule,
+    MatTooltipModule,
+    RouterModule,
     FechaLocalPipe,
     PrecioPipe,
-    PrecioCopPipe
-],
+    PrecioCopPipe,
+  ],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
-export class UserProfileComponent implements OnInit, OnChanges {
+export class UserProfileComponent implements OnInit, OnChanges, OnDestroy {
   @Input() perfilForm!: FormGroup;
   @Input() modoEdicion = false;
   @Input() usuario: Usuario | null = null;
 
+  @Output() actualizarFoto = new EventEmitter<{
+    fileName: string | null;
+    url: string | null;
+  }>();
   @Output() editar = new EventEmitter<void>();
   @Output() guardar = new EventEmitter<void>();
-  @Output() eliminar = new EventEmitter<void>();
   @Output() cancelar = new EventEmitter<void>();
+  @Output() eliminar = new EventEmitter<void>();
 
   cuenta: Cuenta | null = null;
   cargandoCuenta = true;
@@ -75,9 +93,28 @@ export class UserProfileComponent implements OnInit, OnChanges {
     'balancePosterior',
   ];
 
+  // Propiedades para la gestión de fotos de perfil
+  uploadProgress: number = 0;
+  photoUrl: string | null = null;
+  currentPhotoName: string | null = null;
+  uploading: boolean = false;
+
+  @ViewChild('inputFile', { static: false }) inputFile!: ElementRef;
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
+  // Propiedades para la foto de perfil
+  fotoSeleccionada: File | null = null;
+  progreso: number = 0;
+  subiendoFoto = false;
+  urlFoto: string | null = null;
+
+  // Propiedad para manejar la URL temporal actual
+  private currentPhotoUrl: string | null = null;
+
   constructor(
     private cuentaService: CuentaService,
     private router: Router,
+    private photoService: ProfilePhotoService,
   ) {
     // El constructor se mantiene simple, la inicialización se hace en ngOnInit
   }
@@ -88,6 +125,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
       if (this.usuario) {
         this.cargarCuenta();
         this.cargarTransacciones();
+        this.cargarFotoPerfilDesdeUsuario();
       }
     }, 0);
   }
@@ -98,7 +136,22 @@ export class UserProfileComponent implements OnInit, OnChanges {
       setTimeout(() => {
         this.cargarCuenta();
         this.cargarTransacciones();
+        this.cargarFotoPerfilDesdeUsuario();
       }, 0);
+    }
+  }
+
+  /**
+   * Carga la foto de perfil usando el photoFileName del usuario
+   */
+  private cargarFotoPerfilDesdeUsuario(): void {
+    if (
+      this.usuario?.photoFileName &&
+      (!this.currentPhotoName ||
+        this.currentPhotoName !== this.usuario.photoFileName)
+    ) {
+      this.currentPhotoName = this.usuario.photoFileName;
+      this.cargarFotoPerfil();
     }
   }
 
@@ -139,6 +192,28 @@ export class UserProfileComponent implements OnInit, OnChanges {
         this.cargandoTransacciones = false;
       },
     });
+  }
+
+  cargarFotoPerfil(): void {
+    if (this.currentPhotoName) {
+      this.photoService.obtenerUrlFoto(this.currentPhotoName).subscribe({
+        next: (blob: Blob) => {
+          // Limpiar la URL anterior si existe
+          if (this.currentPhotoUrl) {
+            URL.revokeObjectURL(this.currentPhotoUrl);
+          }
+          // Crear una nueva URL para el blob
+          this.currentPhotoUrl = URL.createObjectURL(blob);
+          this.photoUrl = this.currentPhotoUrl;
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error('Error al cargar la foto de perfil:', error);
+          this.photoUrl = null;
+          this.currentPhotoName = null;
+          this.actualizarFoto.emit({ fileName: null, url: null });
+        },
+      });
+    }
   }
 
   iniciarRecarga(): void {
@@ -202,5 +277,111 @@ export class UserProfileComponent implements OnInit, OnChanges {
       CANCELACION_ALQUILER: 'warn',
     };
     return colores[tipo] || '';
+  }
+
+  /**
+   * Maneja la subida de una nueva foto de perfil
+   * @param event Evento del input file
+   */
+  async onPhotoSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        // TODO: Mostrar mensaje de error
+        return;
+      }
+
+      // Validar tamaño (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        // TODO: Mostrar mensaje de error
+        return;
+      }
+
+      this.uploading = true;
+      this.uploadProgress = 0;
+
+      this.photoService.subirFoto(file).subscribe({
+        next: (event: HttpEvent<any>) => {
+          switch (event.type) {
+            case HttpEventType.UploadProgress:
+              if (event.total) {
+                this.uploadProgress = Math.round(
+                  (100 * event.loaded) / event.total,
+                );
+              }
+              break;
+            case HttpEventType.Response:
+              if (event instanceof HttpResponse) {
+                const { url, fileName } = this.photoService.extraerUrlFirmada(
+                  event.body,
+                );
+                if (url && fileName) {
+                  this.currentPhotoName = fileName;
+                  if (this.currentPhotoUrl) {
+                    URL.revokeObjectURL(this.currentPhotoUrl);
+                  }
+                  // Para la foto recién subida, usamos la URL firmada directamente
+                  this.photoUrl = url;
+
+                  // Actualizar el usuario con el nuevo nombre de archivo
+                  if (this.usuario) {
+                    this.usuario.photoFileName = fileName;
+                  }
+
+                  // Emitir el evento para actualizar en el padre
+                  this.actualizarFoto.emit({ fileName, url });
+                }
+              }
+              this.uploading = false;
+              break;
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error('Error al subir la foto:', error);
+          this.uploading = false;
+          // TODO: Mostrar mensaje de error
+        },
+      });
+    }
+  }
+
+  /**
+   * Elimina la foto de perfil actual
+   */
+  eliminarFoto(): void {
+    if (this.currentPhotoName) {
+      this.photoService.eliminarFoto(this.currentPhotoName).subscribe({
+        next: () => {
+          if (this.currentPhotoUrl) {
+            URL.revokeObjectURL(this.currentPhotoUrl);
+          }
+          this.currentPhotoUrl = null;
+          this.photoUrl = null;
+          this.currentPhotoName = null;
+
+          // Actualizar el usuario eliminando la referencia a la foto
+          if (this.usuario) {
+            this.usuario.photoFileName = undefined;
+          }
+
+          this.actualizarFoto.emit({ fileName: null, url: null });
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error('Error al eliminar la foto:', error);
+          // TODO: Mostrar mensaje de error
+        },
+      });
+    }
+  }
+
+  // Limpiar recursos al destruir el componente
+  ngOnDestroy(): void {
+    // Limpiar las URLs temporales al destruir el componente
+    if (this.currentPhotoUrl) {
+      URL.revokeObjectURL(this.currentPhotoUrl);
+    }
   }
 }

@@ -8,6 +8,67 @@
       </mat-card-header>
 
       <mat-card-content>
+        <!-- Sección de foto de perfil -->
+        <div class="foto-perfil-container">
+          <div class="foto-actual">
+            @if (photoUrl) {
+              <img [src]="photoUrl" alt="Foto de perfil" class="foto-perfil" />
+            } @else {
+              <mat-icon class="no-foto">account_circle</mat-icon>
+            }
+          </div>
+
+          <div class="foto-acciones">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="fileInput.click()"
+              [disabled]="uploading"
+              matTooltip="{{
+                uploading
+                  ? 'Subiendo foto...'
+                  : 'Seleccionar nueva foto de perfil'
+              }}"
+            >
+              <mat-icon>add_a_photo</mat-icon>
+              {{ photoUrl ? "Cambiar foto" : "Agregar foto" }}
+            </button>
+
+            @if (photoUrl) {
+              <button
+                mat-button
+                color="warn"
+                (click)="eliminarFoto()"
+                [disabled]="uploading"
+                matTooltip="Eliminar foto de perfil"
+              >
+                <mat-icon>delete</mat-icon>
+                Eliminar foto
+              </button>
+            }
+
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              (change)="onPhotoSelected($event)"
+              style="display: none"
+            />
+          </div>
+
+          @if (uploading) {
+            <div class="progress-container">
+              <mat-progress-bar
+                mode="determinate"
+                [value]="uploadProgress"
+                color="primary"
+              ></mat-progress-bar>
+              <span class="progress-text">{{ uploadProgress }}%</span>
+            </div>
+          }
+        </div>
+
+        <!-- Formulario existente -->
         <form [formGroup]="perfilForm">
           <div class="form-fields">
             <!-- Nombre -->

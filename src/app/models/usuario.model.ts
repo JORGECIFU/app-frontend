@@ -5,4 +5,5 @@ export interface Usuario {
   email: string;
   password?: string;
   rol?: string;
+  photoFileName?: string; // Nombre del archivo de la foto de perfil
 }
