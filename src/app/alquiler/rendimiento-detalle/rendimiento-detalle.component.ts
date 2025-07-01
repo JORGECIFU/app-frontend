@@ -106,17 +106,39 @@ export class RendimientoDetalleComponent
     haceUnAno.setFullYear(haceUnAno.getFullYear() - 1);
     this.fechaMinima = new Date(haceUnAno);
 
-    // Usar la fecha actual como base (30 de junio de 2025)
-    // En lugar de las fechas del alquiler que pueden estar mal formateadas
-    const fechaHoy = new Date();
+    // Usar las fechas del alquiler como base si están disponibles
+    let fechaInicio: Date;
+    let fechaFin: Date;
 
-    // Fecha de inicio: hoy a las 00:00:00
-    const fechaInicio = new Date(fechaHoy);
-    this.establecerHoraInicio(fechaInicio);
+    if (this.data.alquiler.fechaInicio && this.data.alquiler.fechaFin) {
+      // Usar las fechas del alquiler
+      fechaInicio = new Date(this.data.alquiler.fechaInicio);
+      fechaFin = new Date(this.data.alquiler.fechaFin);
 
-    // Fecha de fin: hoy a las 23:59:59
-    const fechaFin = new Date(fechaHoy);
-    this.establecerHoraFin(fechaFin);
+      // Asegurar que fechaInicio esté a las 00:00:00
+      this.establecerHoraInicio(fechaInicio);
+
+      // Si la fecha fin es posterior al día actual, usar el día actual
+      const hoy = new Date();
+      hoy.setHours(23, 59, 59, 999); // Establecer a las 23:59:59
+
+      if (fechaFin > hoy) {
+        fechaFin = new Date(hoy);
+        console.log('Fecha fin ajustada al día actual porque era futura');
+      } else {
+        // Asegurar que fechaFin esté a las 23:59:59
+        this.establecerHoraFin(fechaFin);
+      }
+    } else {
+      // Fallback: usar la fecha actual si no hay fechas del alquiler
+      const fechaHoy = new Date();
+
+      fechaInicio = new Date(fechaHoy);
+      this.establecerHoraInicio(fechaInicio);
+
+      fechaFin = new Date(fechaHoy);
+      this.establecerHoraFin(fechaFin);
+    }
 
     // Establecer valores iniciales en el formulario
     this.fechaForm.setValue({
@@ -124,6 +146,13 @@ export class RendimientoDetalleComponent
       fechaFin: new Date(fechaFin),
     });
 
+    console.log('Alquiler:', this.data.alquiler);
+    console.log(
+      'Fechas del alquiler:',
+      this.data.alquiler.fechaInicio,
+      '-',
+      this.data.alquiler.fechaFin,
+    );
     console.log('Fechas inicializadas:');
     console.log('Fecha inicio:', fechaInicio.toLocaleString('es-CO'));
     console.log('Fecha fin:', fechaFin.toLocaleString('es-CO'));
@@ -473,6 +502,53 @@ export class RendimientoDetalleComponent
 
   obtenerTotalRegistros(): number {
     return this.rendimientos.reduce((acc, r) => acc + r.rendimientos.length, 0);
+  }
+
+  /**
+   * Calcula el tiempo total de operación basado en los registros
+   * Cada registro representa 2 minutos de operación
+   * @returns string con formato "X días, Y horas y Z minutos"
+   */
+  obtenerTiempoOperacion(): string {
+    const totalRegistros = this.obtenerTotalRegistros();
+    const totalMinutos = totalRegistros * 2; // Cada registro son 2 minutos
+
+    if (totalMinutos === 0) {
+      return '0 minutos';
+    }
+
+    // Calcular días, horas y minutos
+    const dias = Math.floor(totalMinutos / (24 * 60)); // 1440 minutos por día
+    const horasRestantes = Math.floor((totalMinutos % (24 * 60)) / 60);
+    const minutosRestantes = totalMinutos % 60;
+
+    // Construir el string de resultado
+    const partes: string[] = [];
+
+    if (dias > 0) {
+      partes.push(`${dias} ${dias === 1 ? 'día' : 'días'}`);
+    }
+
+    if (horasRestantes > 0) {
+      partes.push(
+        `${horasRestantes} ${horasRestantes === 1 ? 'hora' : 'horas'}`,
+      );
+    }
+
+    if (minutosRestantes > 0) {
+      partes.push(
+        `${minutosRestantes} ${minutosRestantes === 1 ? 'minuto' : 'minutos'}`,
+      );
+    }
+
+    // Unir las partes con comas y "y" antes del último elemento
+    if (partes.length === 1) {
+      return partes[0];
+    } else if (partes.length === 2) {
+      return partes.join(' y ');
+    } else {
+      return partes.slice(0, -1).join(', ') + ' y ' + partes[partes.length - 1];
+    }
   }
 
   cerrar(): void {

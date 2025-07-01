@@ -238,32 +238,47 @@
 
 .resumen-rendimientos {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   margin-bottom: 2rem;
   padding: 1rem;
   background-color: rgba(255, 215, 0, 0.1);
   border-radius: 8px;
+  flex-wrap: wrap; // Permitir que se envuelvan los elementos
 
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 1rem;
   }
 
+  @media (min-width: 769px) and (max-width: 1024px) {
+    // En tablets, permitir que el tercer elemento se vaya a la siguiente línea si es necesario
+    justify-content: space-between;
+  }
+
   .resumen-item {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex: 1; // Distribuir equitativamente el espacio
+    min-width: 200px; // Ancho mínimo para cada elemento
+
+    @media (max-width: 768px) {
+      flex: none; // En móvil no usar flex para distribuir espacio
+      min-width: auto;
+    }
 
     mat-icon {
       color: gold;
       font-size: 1.5rem;
       width: 1.5rem;
       height: 1.5rem;
+      flex-shrink: 0; // Evitar que el ícono se reduzca
     }
 
     div {
       display: flex;
       flex-direction: column;
+      flex: 1; // El contenido de texto toma el espacio restante
 
       .label {
         font-size: 0.85rem;
@@ -275,6 +290,7 @@
         font-size: 1.1rem;
         color: #1a2b3c;
         font-weight: 700;
+        word-break: break-word; // Permitir que el texto largo se divida
       }
     }
   }
